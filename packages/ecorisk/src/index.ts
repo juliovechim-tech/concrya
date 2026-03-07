@@ -17,3 +17,4 @@ export type {
   DominiosRisco,
   ScoreDetalhe,
 } from "./types"
+export { applyEcorisk } from "./apply"

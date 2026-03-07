@@ -136,6 +136,10 @@ export const familiaTracoSchema = z.object({
   fonte: z.string().optional(),
 })
 
+// ── ConcretePacket v1 (integracao entre pacotes) ──────────────
+
+export type { ConcretePacket, MixInput } from "./packet"
+
 // ── Schema de traço (input para cálculo) ────────────────────────
 
 export const tracoInputSchema = z.object({

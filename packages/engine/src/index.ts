@@ -18,3 +18,4 @@ export {
   avaliarPiloto,
 } from "./thermocore"
 export type { LoteEnsaio, ThermoMetrics } from "./thermocore"
+export { buildPacketFromMix } from "./packet"

@@ -491,18 +491,39 @@ importers:
         version: 2.1.9(@types/node@24.12.0)(lightningcss@1.31.1)
 
   packages/compensa:
+    dependencies:
+      '@concrya/schemas':
+        specifier: workspace:*
+        version: link:../schemas
     devDependencies:
       typescript:
         specifier: ^5.5.3
         version: 5.9.3
 
   packages/ecorisk:
+    dependencies:
+      '@concrya/schemas':
+        specifier: workspace:*
+        version: link:../schemas
     devDependencies:
       typescript:
         specifier: ^5.5.3
         version: 5.9.3
 
   packages/engine:
+    dependencies:
+      '@concrya/compensa':
+        specifier: workspace:*
+        version: link:../compensa
+      '@concrya/ecorisk':
+        specifier: workspace:*
+        version: link:../ecorisk
+      '@concrya/nivelix':
+        specifier: workspace:*
+        version: link:../nivelix
+      '@concrya/schemas':
+        specifier: workspace:*
+        version: link:../schemas
     devDependencies:
       typescript:
         specifier: ^5.5.3
@@ -512,6 +533,10 @@ importers:
         version: 2.1.9(@types/node@24.12.0)(lightningcss@1.31.1)
 
   packages/nivelix:
+    dependencies:
+      '@concrya/schemas':
+        specifier: workspace:*
+        version: link:../schemas
     devDependencies:
       typescript:
         specifier: ^5.5.3

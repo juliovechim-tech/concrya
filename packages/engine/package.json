@@ -9,11 +9,18 @@
     ".": "./src/index.ts",
     "./abrams": "./src/abrams.ts",
     "./normativas": "./src/normativas.ts",
-    "./thermocore": "./src/thermocore.ts"
+    "./thermocore": "./src/thermocore.ts",
+    "./pipeline": "./src/pipeline.ts"
   },
   "scripts": {
     "check": "tsc --noEmit",
     "test": "vitest run"
+  },
+  "dependencies": {
+    "@concrya/schemas": "workspace:*",
+    "@concrya/compensa": "workspace:*",
+    "@concrya/nivelix": "workspace:*",
+    "@concrya/ecorisk": "workspace:*"
   },
   "devDependencies": {
     "typescript": "^5.5.3",

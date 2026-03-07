@@ -29,3 +29,4 @@ export type {
   ParamsAcustica,
   ResultadoAcustica,
 } from "./types"
+export { applyNivelix } from "./apply"

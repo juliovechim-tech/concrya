@@ -11,6 +11,9 @@
   "scripts": {
     "check": "tsc --noEmit"
   },
+  "dependencies": {
+    "@concrya/schemas": "workspace:*"
+  },
   "devDependencies": {
     "typescript": "^5.5.3"
   }
