@@ -24,21 +24,26 @@ import type { DesejabilidadeConfig } from "./types"
 export function calcDesejabilidade(valor: number, config: DesejabilidadeConfig): number {
   const { limiteInf: L, limiteSup: U, alvo: T, expoente: s, tipo } = config
 
+  // Epsilon minimo para evitar colapso do produto geometrico (Dw=0).
+  // Harrington (1965): forma exponencial nunca atinge exatamente 0.
+  // Valor 0.01 = "extremamente indesejavel, mas nao impossivel".
+  const D_MIN = 0.01
+
   if (tipo === "menor_melhor") {
     if (valor <= L) return 1
-    if (valor >= U) return 0
+    if (valor >= U) return D_MIN
     return Math.pow((U - valor) / (U - L), s)
   }
 
   if (tipo === "maior_melhor") {
     if (valor >= U) return 1
-    if (valor <= L) return 0
+    if (valor <= L) return D_MIN
     return Math.pow((valor - L) / (U - L), s)
   }
 
   // nominal_melhor — bilateral
   const target = T ?? (L + U) / 2
-  if (valor < L || valor > U) return 0
+  if (valor < L || valor > U) return D_MIN
   if (valor <= target) {
     if (Math.abs(target - L) < 1e-12) return 1
     return Math.pow((valor - L) / (target - L), s)
@@ -65,8 +70,16 @@ export function calcDesejabilidadeGlobal(
   const somaW = desejabilidades.reduce((s, item) => s + item.peso, 0)
   if (somaW <= 0) return 0
 
-  // Se algum d = 0, o produto inteiro colapsa
-  if (desejabilidades.some(item => item.d <= 0)) return 0
+  // Se algum d <= 0, usar epsilon minimo em vez de colapsar
+  // (Harrington 1965: desejabilidade nunca exatamente 0)
+  if (desejabilidades.some(item => item.d <= 0)) {
+    const safe = desejabilidades.map(item => ({
+      d: Math.max(0.001, item.d),
+      peso: item.peso,
+    }))
+    const sL = safe.reduce((s, i) => s + i.peso * Math.log(i.d), 0)
+    return Math.exp(sL / somaW)
+  }
 
   // ln(Dw) = (1/Σw) × Σ(wi × ln(di))
   const somaLogPonderada = desejabilidades.reduce(
