@@ -25,17 +25,30 @@ const V_MINI_CONE_M3 = (Math.PI * 0.06 / 3) *
 /** Aceleracao gravitacional — m/s2 */
 const G = 9.81
 
+/** Volume do cone de Abrams (concreto, NBR NM 67) — m3 (~5.5 L) */
+const V_ABRAMS_M3 = 0.0055
+
 /**
- * Estima espalhamento do mini-cone a partir de tau0 e densidade.
- * Modelo de Roussel adaptado para argamassas (geometria mini-cone).
+ * Estima espalhamento a partir de tau0, densidade e volume do cone.
+ * Modelo de Roussel (2005): D = sqrt(2*rho*g*V / (3*tau0)).
  *
+ * @param tau0Pa Tensao de escoamento — Pa
+ * @param rhoKgM3 Densidade — kg/m3
+ * @param volumeConeM3 Volume do cone — m3 (default: mini-cone EN 12706)
  * @returns Espalhamento — mm
  */
-export function estimarEspalhamento(tau0Pa: number, rhoKgM3: number): number {
+export function estimarEspalhamento(
+  tau0Pa: number,
+  rhoKgM3: number,
+  volumeConeM3: number = V_MINI_CONE_M3,
+): number {
   if (tau0Pa <= 0) return 999  // fluido ideal
-  const D_m = Math.sqrt((2 * rhoKgM3 * G * V_MINI_CONE_M3) / (3 * tau0Pa))
+  const D_m = Math.sqrt((2 * rhoKgM3 * G * volumeConeM3) / (3 * tau0Pa))
   return Math.round(D_m * 1000)
 }
+
+/** Volume do cone de Abrams exportado para uso no apply */
+export { V_ABRAMS_M3, V_MINI_CONE_M3 }
 
 /**
  * Estima tau0 a partir do espalhamento medido (inversao do modelo de Roussel).
