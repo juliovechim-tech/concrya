@@ -1,0 +1,52 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.egg-info/
+dist/
+build/
+.eggs/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Virtual environment
+venv/
+.venv/
+env/
+
+# Environment / secrets
+.env
+*.env.local
+
+# SQLite databases
+*.db
+*.db-shm
+*.db-wal
+
+# Alembic temp
+tmp_*.db
+
+# Reports output (gerados em runtime)
+reports/out/
+
+# PDF artefatos de desenvolvimento
+relatorio*.pdf
+
+# Frontend build
+frontend/dist/
+frontend/node_modules/
+
+# Logs
+logs/
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp

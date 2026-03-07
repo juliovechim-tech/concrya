@@ -1,0 +1,143 @@
+// CORE MIX PRO — Schema Prisma
+// Banco: SQLite (ideal para LIMS desktop de laboratório)
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// USUARIO
+// ─────────────────────────────────────────────────────────────────────────────
+
+model User {
+  id           String   @id @default(cuid())
+  nome         String
+  email        String   @unique
+  senhaHash    String
+  laboratorio  String?
+  criadoEm     DateTime @default(now())
+  atualizadoEm DateTime @updatedAt
+
+  projetos Projeto[]
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// PROJETO (agrupa traços e ensaios de uma obra)
+// ─────────────────────────────────────────────────────────────────────────────
+
+model Projeto {
+  id           String   @id @default(cuid())
+  nome         String
+  responsavel  String?
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  criadoEm     DateTime @default(now())
+  atualizadoEm DateTime @updatedAt
+
+  tracos  TracoSalvo[]
+  ensaios EnsaioLab[]
+
+  @@index([userId])
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// TRAÇO SALVO (snapshot completo do cálculo)
+// ─────────────────────────────────────────────────────────────────────────────
+
+model TracoSalvo {
+  id          String  @id @default(cuid())
+  descricao   String
+  projetoId   String
+  projeto     Projeto @relation(fields: [projetoId], references: [id], onDelete: Cascade)
+
+  /// JSON serializado do input completo de calcularTracoTeorico
+  inputJson   String
+  /// JSON serializado do output completo de calcularTracoTeorico
+  outputJson  String
+
+  // Campos denormalizados para listagem/filtro sem parsing JSON
+  fckMPa      Float
+  acAdotado   Float
+  custoM3     Float
+  co2KgM3     Float
+
+  criadoEm     DateTime @default(now())
+  atualizadoEm DateTime @updatedAt
+
+  @@index([projetoId])
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// ENSAIO DE LABORATORIO (genérico, extensível)
+// ─────────────────────────────────────────────────────────────────────────────
+
+model EnsaioLab {
+  id         String   @id @default(cuid())
+  projetoId  String
+  projeto    Projeto  @relation(fields: [projetoId], references: [id], onDelete: Cascade)
+
+  /// Tipo do ensaio: COMPRESSAO | TRACAO | MODULO | SLUMP | etc.
+  tipo       String
+  dataEnsaio DateTime
+
+  /// Dados flexíveis do ensaio em JSON (schema depende do tipo)
+  dadosJson  String
+
+  criadoEm DateTime @default(now())
+
+  @@index([projetoId])
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// MONITORAMENTO THERMOCORE (leituras Eletroterm via NEXUS)
+// ─────────────────────────────────────────────────────────────────────────────
+
+model MonitoramentoTC {
+  id          String   @id @default(cuid())
+  /// ID do dispositivo Eletroterm (ex: "ELET-001")
+  deviceId    String
+  /// Descrição do ponto monitorado (ex: "Bloco B1 — Núcleo")
+  descricao   String?
+  /// Tipo de cimento usado
+  tipoCimento String   @default("CP_V_ARI")
+  /// fck de projeto — MPa
+  fck28MPa    Float    @default(40)
+  /// Relação a/c
+  relacaoAc   Float    @default(0.50)
+  /// Ea — J/mol
+  eaJMol      Float    @default(40000)
+  /// Calibração Su/τ/β em JSON
+  calibracaoJson String
+  /// Status: ATIVO | CONCLUIDO | CANCELADO
+  status      String   @default("ATIVO")
+  criadoEm    DateTime @default(now())
+  atualizadoEm DateTime @updatedAt
+
+  leituras LeituraTC[]
+
+  @@index([deviceId])
+  @@index([status])
+}
+
+model LeituraTC {
+  id               String   @id @default(cuid())
+  monitoramentoId  String
+  monitoramento    MonitoramentoTC @relation(fields: [monitoramentoId], references: [id], onDelete: Cascade)
+  /// Tempo desde concretagem — horas
+  tempoH           Float
+  /// Temperatura do concreto — °C (canal principal)
+  temperaturaC     Float
+  /// Canais adicionais em JSON (ch2, ch3, ch4)
+  canaisJson       String?
+  /// Timestamp original do NEXUS
+  timestampOriginal String?
+  criadoEm         DateTime @default(now())
+
+  @@index([monitoramentoId])
+  @@index([monitoramentoId, tempoH])
+}

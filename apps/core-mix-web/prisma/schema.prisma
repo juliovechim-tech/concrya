@@ -1,0 +1,244 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// ─── EMPRESA ────────────────────────────────────────────────
+model Company {
+  id        String   @id @default(uuid())
+  name      String
+  plan      String   @default("free")
+  createdAt DateTime @default(now())
+
+  machines       Machine[]
+  operators      Operator[]
+  materials      Material[]
+  products       Product[]
+  mixDesigns     MixDesign[]
+  lots           Lot[]
+  gradingCurves  GradingCurve[]
+}
+
+// ─── EQUIPAMENTOS ───────────────────────────────────────────
+model Machine {
+  id        String   @id @default(uuid())
+  name      String
+  type      String   @default("vibroprensa") // vibroprensa, misturador, dosador
+  companyId String
+  createdAt DateTime @default(now())
+
+  company Company @relation(fields: [companyId], references: [id])
+  lots    Lot[]
+}
+
+model Operator {
+  id        String   @id @default(uuid())
+  name      String
+  companyId String
+  createdAt DateTime @default(now())
+
+  company Company @relation(fields: [companyId], references: [id])
+  lots    Lot[]
+}
+
+// ─── MATERIAIS ──────────────────────────────────────────────
+enum MaterialType {
+  CITE        // cimento
+  AGG_COARSE  // agregado graudo
+  AGG_FINE    // agregado miudo (areia)
+  AGG_DUST    // po de pedra
+  PIGMENT     // pigmento
+  ADDITIVE    // aditivo
+  WATER       // agua
+}
+
+model Material {
+  id           String       @id @default(uuid())
+  name         String
+  type         MaterialType
+  density      Float?       // massa especifica (g/cm3)
+  bulkDensity  Float?       // massa unitaria (kg/m3)
+  moisturePct  Float?       // teor de umidade (%)
+  absorptionPct Float?      // absorcao (%)
+  fmk          Float?       // modulo de finura
+  costPerKg    Float?
+  supplier     String?
+  companyId    String
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+
+  company        Company              @relation(fields: [companyId], references: [id])
+  sieveAnalyses  SieveAnalysis[]
+  mixComponents  MixDesignComponent[]
+
+  @@index([companyId, type])
+}
+
+// ─── GRANULOMETRIA ──────────────────────────────────────────
+model SieveAnalysis {
+  id         String   @id @default(uuid())
+  materialId String
+  date       DateTime @default(now())
+  notes      String?
+
+  material Material            @relation(fields: [materialId], references: [id], onDelete: Cascade)
+  readings SieveAnalysisReading[]
+}
+
+model SieveAnalysisReading {
+  id              String @id @default(uuid())
+  sieveAnalysisId String
+  sieveMm         Float  // abertura da peneira (mm): 19, 12.5, 9.5, 6.3, 4.75, 2.36, 1.18, 0.6, 0.3, 0.15, fundo
+  retainedG       Float  // massa retida (g)
+  retainedPct     Float  // % retida individual
+  cumulRetainedPct Float // % retida acumulada
+  passingPct      Float  // % passante
+
+  sieveAnalysis SieveAnalysis @relation(fields: [sieveAnalysisId], references: [id], onDelete: Cascade)
+
+  @@unique([sieveAnalysisId, sieveMm])
+}
+
+// ─── CURVAS GRANULOMETRICAS (LIMITES) ───────────────────────
+model GradingCurve {
+  id          String   @id @default(uuid())
+  name        String   // ex: "Faixa Ideal Paver 8cm", "NBR 7211 Faixa 2"
+  description String?
+  productFamily String // paver, bloco, tubo
+  companyId   String
+  createdAt   DateTime @default(now())
+
+  company Company             @relation(fields: [companyId], references: [id])
+  limits  GradingCurveLimit[]
+}
+
+model GradingCurveLimit {
+  id             String @id @default(uuid())
+  gradingCurveId String
+  sieveMm        Float  // abertura da peneira (mm)
+  minPassingPct  Float  // % passante minimo
+  maxPassingPct  Float  // % passante maximo
+
+  gradingCurve GradingCurve @relation(fields: [gradingCurveId], references: [id], onDelete: Cascade)
+
+  @@unique([gradingCurveId, sieveMm])
+}
+
+// ─── PRODUTOS ───────────────────────────────────────────────
+enum ProductFamily {
+  PAVER         // piso intertravado
+  BLOCK         // bloco de concreto
+  PIPE          // tubo de concreto
+  CURBSTONE     // meio-fio
+  SLAB          // laje
+  OTHER
+}
+
+model Product {
+  id            String        @id @default(uuid())
+  sku           String
+  name          String        // ex: "Paver Retangular 10x20x8"
+  family        ProductFamily
+  thicknessMm   Float         // espessura (mm)
+  lengthMm      Float?        // comprimento (mm)
+  widthMm       Float?        // largura (mm)
+  weightKg      Float?        // peso unitario (kg)
+  areaM2        Float?        // area por peca (m2)
+  volumeCm3     Float?        // volume por peca (cm3)
+  targetSlumpMm Float         @default(30) // slump alvo (0-60mm)
+  minFckMpa     Float?        // resistencia minima (MPa)
+  companyId     String
+  createdAt     DateTime      @default(now())
+
+  company    Company      @relation(fields: [companyId], references: [id])
+  mixDesigns MixDesign[]
+
+  @@index([companyId, family])
+}
+
+// ─── DOSAGEM (TRACO) ────────────────────────────────────────
+model MixDesign {
+  id                 String   @id @default(uuid())
+  code               String   // ex: "TR-PAVER-001"
+  name               String   // ex: "Traco Paver 35MPa"
+  version            Int      @default(1)
+  status             String   @default("draft") // draft, active, archived
+  targetSlumpMm      Float    @default(30)
+  targetDensity      Float?   // massa especifica fresca alvo (kg/m3)
+  wcRatio            Float?   // relacao agua/cimento
+  cementConsumption  Float?   // consumo de cimento (kg/m3)
+  totalWaterL        Float?   // agua total (L/m3)
+  notes              String?
+  productId          String?
+  companyId          String
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  product    Product?             @relation(fields: [productId], references: [id])
+  company    Company              @relation(fields: [companyId], references: [id])
+  components MixDesignComponent[]
+  lots       Lot[]
+
+  @@index([companyId, status])
+}
+
+model MixDesignComponent {
+  id           String @id @default(uuid())
+  mixDesignId  String
+  materialId   String
+  quantityKg   Float  // quantidade por m3 (kg)
+  proportion   Float? // proporcao no traco (ex: 1:3:2 -> cimento=1, areia=3, brita=2)
+  moisturePct  Float? // umidade corrigida (%)
+  correctedKg  Float? // quantidade corrigida pela umidade (kg)
+
+  mixDesign MixDesign @relation(fields: [mixDesignId], references: [id], onDelete: Cascade)
+  material  Material  @relation(fields: [materialId], references: [id])
+
+  @@unique([mixDesignId, materialId])
+}
+
+// ─── PRODUCAO (LOTES) ───────────────────────────────────────
+model Lot {
+  id           String   @id @default(uuid())
+  code         String   // ex: "LOT-2026-0001"
+  date         DateTime
+  shift        String?  // turno: manha, tarde, noite
+  mixDesignId  String
+  machineId    String
+  operatorId   String?
+  companyId    String
+  batchCount   Int?     // numero de betonadas
+  totalVolume  Float?   // volume total produzido (m3)
+  totalPieces  Int?     // total de pecas produzidas
+  slumpMm      Float?   // slump medido (mm)
+  freshDensity Float?   // massa especifica fresca medida (kg/m3)
+  notes        String?
+  createdAt    DateTime @default(now())
+
+  company   Company    @relation(fields: [companyId], references: [id])
+  machine   Machine    @relation(fields: [machineId], references: [id])
+  operator  Operator?  @relation(fields: [operatorId], references: [id])
+  mixDesign MixDesign  @relation(fields: [mixDesignId], references: [id])
+  controls  LotControl[]
+}
+
+model LotControl {
+  id            String   @id @default(uuid())
+  lotId         String
+  timestamp     DateTime @default(now())
+  parameter     String   // slump, densidade, umidade, temperatura
+  targetValue   Float?
+  measuredValue Float
+  unit          String   // mm, kg/m3, %, C
+  inSpec        Boolean  @default(true)
+  notes         String?
+
+  lot Lot @relation(fields: [lotId], references: [id], onDelete: Cascade)
+
+  @@index([lotId, parameter])
+}

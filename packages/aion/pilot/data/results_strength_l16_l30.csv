@@ -1,0 +1,31 @@
+external_id,age_days,fc_mpa,specimen_count,test_standard,lab,notes,model
+L016,7,27.8,3,ABNT NBR 5739,Lab Planta,cura umida,arrhenius
+L016,28,39.5,3,ABNT NBR 5739,Lab Planta,ok,arrhenius
+L017,7,32.0,3,ABNT NBR 5739,Lab Planta,cura umida,arrhenius
+L017,28,43.5,3,ABNT NBR 5739,Lab Planta,ok,arrhenius
+L018,7,33.2,3,ABNT NBR 5739,Lab Planta,cura umida,arrhenius
+L018,28,44.8,3,ABNT NBR 5739,Lab Planta,ok,arrhenius
+L019,7,30.5,3,ABNT NBR 5739,Lab Planta,cura umida,arrhenius
+L019,28,41.5,3,ABNT NBR 5739,Lab Planta,ok,arrhenius
+L020,7,31.4,3,ABNT NBR 5739,Lab Planta,cura umida,arrhenius
+L020,28,43.0,3,ABNT NBR 5739,Lab Planta,ok,arrhenius
+L021,7,31.8,3,ABNT NBR 5739,Lab Planta,cura umida,arrhenius
+L021,28,43.2,3,ABNT NBR 5739,Lab Planta,ok,arrhenius
+L022,7,32.6,3,ABNT NBR 5739,Lab Planta,cura umida,arrhenius
+L022,28,44.3,3,ABNT NBR 5739,Lab Planta,ok,arrhenius
+L023,7,30.0,3,ABNT NBR 5739,Lab Planta,cura umida,arrhenius
+L023,28,41.2,3,ABNT NBR 5739,Lab Planta,ok,arrhenius
+L024,7,31.5,3,ABNT NBR 5739,Lab Planta,cura umida,arrhenius
+L024,28,43.1,3,ABNT NBR 5739,Lab Planta,ok,arrhenius
+L025,7,31.9,3,ABNT NBR 5739,Lab Planta,cura umida,arrhenius
+L025,28,43.5,3,ABNT NBR 5739,Lab Planta,ok,arrhenius
+L026,7,32.8,3,ABNT NBR 5739,Lab Planta,cura umida,arrhenius
+L026,28,44.6,3,ABNT NBR 5739,Lab Planta,ok,arrhenius
+L027,7,31.6,3,ABNT NBR 5739,Lab Planta,cura umida,arrhenius
+L027,28,43.2,3,ABNT NBR 5739,Lab Planta,ok,arrhenius
+L028,7,29.2,3,ABNT NBR 5739,Lab Planta,cura umida,arrhenius
+L028,28,40.8,3,ABNT NBR 5739,Lab Planta,ok,arrhenius
+L029,7,31.0,3,ABNT NBR 5739,Lab Planta,cura umida,arrhenius
+L029,28,42.8,3,ABNT NBR 5739,Lab Planta,ok,arrhenius
+L030,7,30.5,3,ABNT NBR 5739,Lab Planta,cura umida,arrhenius
+L030,28,41.5,3,ABNT NBR 5739,Lab Planta,ok,arrhenius

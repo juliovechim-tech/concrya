@@ -1,0 +1,26 @@
+{
+  "query": "SELECT * FROM leads ORDER BY id DESC LIMIT 5;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user LiZn66JGeXPPYic.879a3f04a08f --database TCcGfHWMyhP9zB35J3FQLz --execute SELECT * FROM leads ORDER BY id DESC LIMIT 5;",
+  "rows": [
+    {
+      "id": "1",
+      "email": "joao.teste@email.com",
+      "nome": "João Teste",
+      "telefone": "NULL",
+      "origem": "ferramenta_gratuita",
+      "ferramenta": "otimizacao_agregados",
+      "interesse": "NULL",
+      "utmSource": "NULL",
+      "utmMedium": "NULL",
+      "utmCampaign": "NULL",
+      "status": "novo",
+      "observacoes": "NULL",
+      "createdAt": "2026-01-09 08:25:45",
+      "updatedAt": "2026-01-09 08:25:45"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\temail\tnome\ttelefone\torigem\tferramenta\tinteresse\tutmSource\tutmMedium\tutmCampaign\tstatus\tobservacoes\tcreatedAt\tupdatedAt\n1\tjoao.teste@email.com\tJoão Teste\tNULL\tferramenta_gratuita\totimizacao_agregados\tNULL\tNULL\tNULL\tNULL\tnovo\tNULL\t2026-01-09 08:25:45\t2026-01-09 08:25:45\n",
+  "stderr": "",
+  "execution_time_ms": 98
+}

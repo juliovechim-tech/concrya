@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CORE ENGINE NEXUS</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap');
+
+    :root {
+      --bg:    #07090F; --panel:  #0C1018; --panel2: #111722;
+      --border:#1A2333; --text:   #CDD8E8; --muted:  #3D5270;
+      --m1:#FFB830; --m2:#FF8C00; --m3:#E05A00; --m4:#B83800;
+      --c1:#00E5D4; --c2:#00B4CC; --c3:#0082B8; --c4:#0055A0;
+      --r1:#C084FC;
+      --green:#3DDC84; --red:#FF4757; --yellow:#FFD166; --orange:#FF8C42;
+    }
+
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { background:var(--bg); color:var(--text); font-family:'IBM Plex Sans',sans-serif; min-height:100vh; display:flex; flex-direction:column; }
+
+    /* ── HEADER ─────────────────────────────── */
+    header {
+      display:flex; align-items:center; justify-content:space-between;
+      padding:11px 22px; background:var(--panel); border-bottom:1px solid var(--border);
+      flex-wrap:wrap; gap:8px;
+    }
+    .hd-left { display:flex; align-items:center; gap:11px; }
+    .logo {
+      background:linear-gradient(135deg,#00E5D4,#C084FC);
+      border-radius:7px; width:32px; height:32px;
+      display:flex; align-items:center; justify-content:center;
+      font-family:'JetBrains Mono',monospace; font-weight:700; font-size:12px; color:#07090F;
+    }
+    .hd-title h1 { font-size:14px; font-weight:600; }
+    .hd-title p  { font-size:9px; color:var(--muted); letter-spacing:2px; font-family:'JetBrains Mono',monospace; margin-top:2px; }
+    .hd-right { display:flex; align-items:center; gap:7px; flex-wrap:wrap; }
+
+    .pill {
+      display:flex; align-items:center; gap:6px;
+      padding:4px 11px; border-radius:20px;
+      border:1px solid var(--border); background:var(--panel2);
+      font-family:'JetBrains Mono',monospace; font-size:10px;
+    }
+    .dot { width:6px; height:6px; border-radius:50%; background:var(--green); animation:blink 2s infinite; }
+    .dot.off  { background:var(--muted); animation:none; }
+    .dot.warn { background:var(--yellow); }
+    @keyframes blink { 0%,100%{opacity:1;} 50%{opacity:.4;} }
+
+    .btn {
+      padding:6px 13px; border-radius:7px; cursor:pointer;
+      border:1px solid var(--border); background:var(--panel2);
+      color:var(--text); font-family:'JetBrains Mono',monospace; font-size:10px;
+      transition:all .15s; white-space:nowrap;
+    }
+    .btn:hover       { border-color:var(--c1); color:var(--c1); }
+    .btn.sim:hover   { border-color:var(--yellow); color:var(--yellow); }
+    .btn.clr:hover   { border-color:var(--red);    color:var(--red); }
+    .btn.csv         { border-color:var(--green); color:var(--green); }
+    .btn.csv:hover   { background:rgba(61,220,132,.1); }
+    .btn.rec-off     { border-color:var(--red); color:var(--red); }
+    .btn.rec-off:hover { background:rgba(255,71,87,.1); }
+    .btn.rec-on      { border-color:var(--red); color:#07090F; background:var(--red); animation:rpulse 1.2s infinite; }
+    @keyframes rpulse { 0%,100%{box-shadow:0 0 0 0 rgba(255,71,87,.5);} 50%{box-shadow:0 0 0 6px rgba(255,71,87,0);} }
+
+    /* sample rate inline */
+    .sr-wrap { display:flex; align-items:center; gap:5px; }
+    .sr-wrap label { font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--muted); }
+    .sr-wrap input  {
+      width:52px; padding:5px 7px; border-radius:6px;
+      border:1px solid var(--border); background:var(--panel2);
+      color:var(--text); font-family:'JetBrains Mono',monospace; font-size:10px;
+      text-align:center;
+    }
+    .sr-wrap input:focus { outline:none; border-color:var(--c1); }
+    .sr-wrap button { padding:5px 9px; border-radius:6px; border:1px solid var(--orange); background:transparent; color:var(--orange); font-family:'JetBrains Mono',monospace; font-size:10px; cursor:pointer; transition:.15s; }
+    .sr-wrap button:hover { background:rgba(255,140,66,.12); }
+
+    /* ── KPI ROW ─────────────────────────────── */
+    .kpi-row { display:flex; gap:1px; background:var(--border); border-bottom:1px solid var(--border); flex-wrap:wrap; }
+    .kpi { flex:1 1 130px; background:var(--panel); padding:10px 16px; display:flex; align-items:center; gap:10px; }
+    .kpi-ico { font-size:18px; flex-shrink:0; }
+    .kpi-lbl { font-size:8px; color:var(--muted); letter-spacing:2px; font-family:'JetBrains Mono',monospace; margin-bottom:2px; text-transform:uppercase; }
+    .kpi-val { font-size:18px; font-weight:700; font-family:'JetBrains Mono',monospace; }
+    .kpi-unit{ font-size:10px; color:var(--muted); margin-left:2px; }
+    .rec-badge { display:inline-flex; align-items:center; gap:5px; font-family:'JetBrains Mono',monospace; font-size:10px; padding:2px 8px; border-radius:4px; }
+    .rec-badge.on  { background:rgba(255,71,87,.12); color:var(--red);   border:1px solid rgba(255,71,87,.35); }
+    .rec-badge.off { background:rgba(61,82,112,.12); color:var(--muted); border:1px solid var(--border); }
+    .rec-badge .rd { width:5px; height:5px; border-radius:50%; background:currentColor; }
+    .rec-badge.on .rd { animation:blink .8s infinite; }
+
+    /* ── CHARTS ─────────────────────────────── */
+    .charts-col { flex:1; display:flex; flex-direction:column; }
+    .chart-panel { flex:1; background:var(--panel); border-bottom:1px solid var(--border); padding:14px 18px 10px; display:flex; flex-direction:column; }
+    .cp-header { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:10px; flex-wrap:wrap; gap:6px; }
+    .cp-title { display:flex; align-items:center; gap:8px; }
+    .sdot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+    .cp-title h2 { font-size:12px; font-weight:600; }
+    .cp-title p  { font-size:9px; color:var(--muted); margin-top:2px; }
+    .badges { display:flex; gap:4px; flex-wrap:wrap; margin-top:5px; }
+    .badge { font-family:'JetBrains Mono',monospace; font-size:9px; padding:1px 7px; border-radius:3px; border:1px solid; opacity:.8; }
+    .lv { font-family:'JetBrains Mono',monospace; font-size:9px; color:var(--muted); text-align:right; line-height:1.8; }
+    .lv span { display:block; }
+    .cw { position:relative; flex:1; min-height:150px; }
+
+    /* ── LOG ─────────────────────────────────── */
+    .log-bar { background:var(--panel); border-top:1px solid var(--border); padding:8px 18px; display:flex; align-items:center; gap:12px; flex-shrink:0; }
+    .log-lbl { font-family:'JetBrains Mono',monospace; font-size:8px; color:var(--muted); letter-spacing:2px; flex-shrink:0; }
+    #log { flex:1; overflow-x:auto; white-space:nowrap; font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--muted); }
+    .ok{color:var(--green);} .warn{color:var(--yellow);} .info{color:var(--c1);} .rec{color:var(--red);}
+
+    ::-webkit-scrollbar{width:3px;height:3px;} ::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px;}
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="hd-left">
+    <div class="logo">CN</div>
+    <div class="hd-title">
+      <h1>CORE ENGINE NEXUS</h1>
+      <p>MQTT · 4×TIPO K · 4×DS18B20 · AMPERE</p>
+    </div>
+  </div>
+  <div class="hd-right">
+    <!-- Conexão Flask -->
+    <div class="pill"><div class="dot" id="dot-flask"></div><span id="txt-flask">Flask...</span></div>
+    <!-- Conexão MQTT -->
+    <div class="pill"><div class="dot off" id="dot-mqtt"></div><span id="txt-mqtt">MQTT...</span></div>
+
+    <!-- Gravação -->
+    <button class="btn rec-off" id="btn-rec" onclick="toggleGravacao()">▶ Iniciar Gravação</button>
+
+    <!-- Sample Rate -->
+    <div class="sr-wrap">
+      <label>SR</label>
+      <input type="number" id="inp-sr" min="1" max="3600" value="10"/>
+      <span class="kpi-unit">s</span>
+      <button onclick="setSampleRate()">↑ Enviar</button>
+    </div>
+
+    <!-- CSV -->
+    <button class="btn csv" onclick="baixarCSV()">📥 CSV</button>
+    <!-- Simular -->
+    <button class="btn sim" onclick="simular()">⚡ Sim</button>
+    <!-- Limpar -->
+    <button class="btn clr" onclick="limpar()">🗑</button>
+  </div>
+</header>
+
+<!-- KPI ROW -->
+<div class="kpi-row">
+  <div class="kpi">
+    <div class="kpi-ico">🔴</div>
+    <div>
+      <div class="kpi-lbl">Gravação</div>
+      <div id="rec-badge" class="rec-badge off"><div class="rd"></div><span id="rec-txt">PAUSADO</span></div>
+    </div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-ico">📡</div>
+    <div>
+      <div class="kpi-lbl">Sample Rate</div>
+      <div><span class="kpi-val" id="kv-sr" style="color:var(--orange)">--</span><span class="kpi-unit">s</span></div>
+    </div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-ico">🌡</div>
+    <div>
+      <div class="kpi-lbl">Maturidade Máx</div>
+      <div><span class="kpi-val" id="kv-mat" style="color:var(--m1)">--</span><span class="kpi-unit">°C</span></div>
+    </div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-ico">🔬</div>
+    <div>
+      <div class="kpi-lbl">Calorimetria Máx</div>
+      <div><span class="kpi-val" id="kv-cal" style="color:var(--c1)">--</span><span class="kpi-unit">°C</span></div>
+    </div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-ico">⚡</div>
+    <div>
+      <div class="kpi-lbl">Amperagem</div>
+      <div><span class="kpi-val" id="kv-reo" style="color:var(--r1)">--</span><span class="kpi-unit">A</span></div>
+    </div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-ico">🕐</div>
+    <div>
+      <div class="kpi-lbl">Tempo Ensaio</div>
+      <div><span class="kpi-val" id="kv-time" style="color:var(--green)">--</span><span class="kpi-unit">h</span></div>
+    </div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-ico">📦</div>
+    <div>
+      <div class="kpi-lbl">Total Leituras</div>
+      <div><span class="kpi-val" id="kv-total" style="color:var(--text)">0</span><span class="kpi-unit">pts</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- CHARTS -->
+<div class="charts-col">
+
+  <div class="chart-panel">
+    <div class="cp-header">
+      <div>
+        <div class="cp-title"><div class="sdot" style="background:var(--m1)"></div><div><h2>Maturidade — Sensores Tipo K</h2><p>Temperatura (°C) vs. Tempo (h) · 4 canais</p></div></div>
+        <div class="badges">
+          <span class="badge" style="color:var(--m1);border-color:var(--m1)">CH1</span>
+          <span class="badge" style="color:var(--m2);border-color:var(--m2)">CH2</span>
+          <span class="badge" style="color:var(--m3);border-color:var(--m3)">CH3</span>
+          <span class="badge" style="color:var(--m4);border-color:var(--m4)">CH4</span>
+        </div>
+      </div>
+      <div class="lv" id="lv-mat"><span>CH1: --</span><span>CH2: --</span><span>CH3: --</span><span>CH4: --</span></div>
+    </div>
+    <div class="cw"><canvas id="ch-mat"></canvas></div>
+  </div>
+
+  <div class="chart-panel">
+    <div class="cp-header">
+      <div>
+        <div class="cp-title"><div class="sdot" style="background:var(--c1)"></div><div><h2>Calorimetria — Sensores DS18B20</h2><p>Temperatura (°C) vs. Tempo (h) · 4 canais</p></div></div>
+        <div class="badges">
+          <span class="badge" style="color:var(--c1);border-color:var(--c1)">CH1</span>
+          <span class="badge" style="color:var(--c2);border-color:var(--c2)">CH2</span>
+          <span class="badge" style="color:var(--c3);border-color:var(--c3)">CH3</span>
+          <span class="badge" style="color:var(--c4);border-color:var(--c4)">CH4</span>
+        </div>
+      </div>
+      <div class="lv" id="lv-cal"><span>CH1: --</span><span>CH2: --</span><span>CH3: --</span><span>CH4: --</span></div>
+    </div>
+    <div class="cw"><canvas id="ch-cal"></canvas></div>
+  </div>
+
+  <div class="chart-panel">
+    <div class="cp-header">
+      <div>
+        <div class="cp-title"><div class="sdot" style="background:var(--r1)"></div><div><h2>Reologia — Amperagem Parafusadeira Bosch</h2><p>Corrente (A) vs. Tempo (s) · proxy de viscosidade/torque</p></div></div>
+        <div class="badges"><span class="badge" style="color:var(--r1);border-color:var(--r1)">AMPERAGEM</span></div>
+      </div>
+      <div class="lv" id="lv-reo"><span>Amp: -- A</span></div>
+    </div>
+    <div class="cw"><canvas id="ch-reo"></canvas></div>
+  </div>
+
+</div>
+
+<div class="log-bar">
+  <span class="log-lbl">LOG</span>
+  <div id="log">Sistema iniciado. Aguardando conexão MQTT e dados dos sensores...</div>
+</div>
+
+<script>
+const API    = "http://localhost:5000";
+const POLL   = 3000;
+const GC     = "rgba(26,35,51,0.9)";
+const TC     = "#3D5270";
+
+function mkDs(label, color) {
+  return { label, borderColor:color, backgroundColor:color+'15', data:[],
+           tension:0.4, pointRadius:2, pointHoverRadius:5, borderWidth:1.8 };
+}
+function baseOpts(xl, yl) {
+  return {
+    responsive:true, maintainAspectRatio:false, animation:{duration:300},
+    plugins:{ legend:{ labels:{ color:'#CDD8E8', font:{family:'JetBrains Mono',size:10}, boxWidth:10, padding:12 } } },
+    scales:{
+      x:{ title:{display:true,text:xl,color:TC,font:{size:9}}, ticks:{color:TC,font:{family:'JetBrains Mono',size:9},maxTicksLimit:12}, grid:{color:GC} },
+      y:{ title:{display:true,text:yl,color:TC,font:{size:9}}, ticks:{color:TC,font:{family:'JetBrains Mono',size:9}}, grid:{color:GC} }
+    }
+  };
+}
+function mkChart(id,datasets,xl,yl){ return new Chart(document.getElementById(id).getContext('2d'),{type:'line',data:{labels:[],datasets},options:baseOpts(xl,yl)}); }
+
+const chartMat = mkChart('ch-mat',[mkDs('CH1 — Tipo K','#FFB830'),mkDs('CH2 — Tipo K','#FF8C00'),mkDs('CH3 — Tipo K','#E05A00'),mkDs('CH4 — Tipo K','#B83800')],'Tempo (h)','Temperatura (°C)');
+const chartCal = mkChart('ch-cal',[mkDs('CH1 — DS18B20','#00E5D4'),mkDs('CH2 — DS18B20','#00B4CC'),mkDs('CH3 — DS18B20','#0082B8'),mkDs('CH4 — DS18B20','#0055A0')],'Tempo (h)','Temperatura (°C)');
+const chartReo = mkChart('ch-reo',[mkDs('Amperagem (A)','#C084FC')],'Tempo (s)','Corrente (A)');
+
+function addLog(msg, cls='info') {
+  const t = new Date().toLocaleTimeString('pt-BR');
+  const el = document.getElementById('log');
+  el.innerHTML = `<span class="${cls}">[${t}] ${msg}</span>  ` + el.innerHTML;
+}
+
+function setRecUI(gravando) {
+  const btn   = document.getElementById('btn-rec');
+  const badge = document.getElementById('rec-badge');
+  const txt   = document.getElementById('rec-txt');
+  if (gravando) {
+    btn.className='btn rec-on'; btn.textContent='⏸ Pausar Gravação';
+    badge.className='rec-badge on'; txt.textContent='GRAVANDO';
+  } else {
+    btn.className='btn rec-off'; btn.textContent='▶ Iniciar Gravação';
+    badge.className='rec-badge off'; txt.textContent='PAUSADO';
+  }
+}
+
+async function toggleGravacao() {
+  try {
+    const r = await fetch(`${API}/api/gravacao`,{method:'POST'});
+    const d = await r.json();
+    setRecUI(d.gravando);
+    addLog(d.gravando ? '▶ Gravação iniciada — ESP32 notificado via MQTT' : '⏸ Gravação pausada — ESP32 notificado via MQTT', d.gravando ? 'rec' : 'warn');
+  } catch { addLog('Erro ao alternar gravação','warn'); }
+}
+
+async function setSampleRate() {
+  const sr = parseInt(document.getElementById('inp-sr').value);
+  if (!sr || sr < 1 || sr > 3600) { addLog('Sample rate inválido (1–3600 s)','warn'); return; }
+  try {
+    const r = await fetch(`${API}/api/samplerate`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({sample_rate_s:sr})});
+    const d = await r.json();
+    addLog(`📡 Sample rate → ${d.sample_rate_s}s publicado no ESP32 via MQTT`,'info');
+  } catch { addLog('Erro ao definir sample rate','warn'); }
+}
+
+function baixarCSV() { addLog('📥 Exportando CSV...','info'); window.location.href=`${API}/api/exportar`; }
+
+async function simular() {
+  try { await fetch(`${API}/api/simular`,{method:'POST'}); addLog('⚡ Ponto simulado (sem ESP32)','info'); poll(); }
+  catch { addLog('Erro ao simular','warn'); }
+}
+
+async function limpar() {
+  if (!confirm('Apagar todos os dados?')) return;
+  await fetch(`${API}/api/limpar`,{method:'POST'});
+  lastTotal=0;
+  [chartMat,chartCal,chartReo].forEach(c=>{c.data.labels=[];c.data.datasets.forEach(ds=>ds.data=[]);c.update();});
+  ['kv-mat','kv-cal','kv-reo','kv-time'].forEach(id=>document.getElementById(id).textContent='--');
+  document.getElementById('kv-total').textContent='0';
+  addLog('Dados limpos — novo ensaio','warn');
+}
+
+let lastTotal = 0;
+
+async function poll() {
+  try {
+    const r = await fetch(`${API}/api/dados`);
+    if (!r.ok) throw new Error();
+    const d = await r.json();
+
+    // Flask OK
+    document.getElementById('dot-flask').className='dot';
+    document.getElementById('txt-flask').textContent='Flask OK';
+
+    // MQTT status
+    const mqttOk = d._mqtt_conectado;
+    document.getElementById('dot-mqtt').className = mqttOk ? 'dot' : 'dot warn';
+    document.getElementById('txt-mqtt').textContent = mqttOk ? `MQTT OK` : 'MQTT offline';
+
+    setRecUI(d._gravando || false);
+
+    if (d._sample_rate) {
+      document.getElementById('kv-sr').textContent = d._sample_rate;
+      document.getElementById('inp-sr').value = d._sample_rate;
+    }
+
+    const mat=d.maturidade||[], cal=d.calorimetria||[], reo=d.reologia||[];
+    const total=mat.length+cal.length+reo.length;
+
+    if (mat.length) { const l=mat[mat.length-1]; document.getElementById('kv-mat').textContent=Math.max(l.ch1,l.ch2,l.ch3,l.ch4).toFixed(1); document.getElementById('kv-time').textContent=l.tempo_h.toFixed(2); }
+    if (cal.length) { const l=cal[cal.length-1]; document.getElementById('kv-cal').textContent=Math.max(l.ch1,l.ch2,l.ch3,l.ch4).toFixed(1); }
+    if (reo.length) { document.getElementById('kv-reo').textContent=reo[reo.length-1].amperagem.toFixed(2); }
+    document.getElementById('kv-total').textContent=total;
+
+    if (total > lastTotal) { addLog(`${total-lastTotal} novo(s) ponto(s) via MQTT — total ${total}`,'ok'); lastTotal=total; }
+
+    chartMat.data.labels=mat.map(p=>p.tempo_h);
+    [0,1,2,3].forEach(i=>chartMat.data.datasets[i].data=mat.map(p=>p[`ch${i+1}`])); chartMat.update();
+    if (mat.length){const l=mat[mat.length-1];document.getElementById('lv-mat').innerHTML=[1,2,3,4].map(i=>`<span>CH${i}: ${l[`ch${i}`].toFixed(1)}°C</span>`).join('');}
+
+    chartCal.data.labels=cal.map(p=>p.tempo_h);
+    [0,1,2,3].forEach(i=>chartCal.data.datasets[i].data=cal.map(p=>p[`ch${i+1}`])); chartCal.update();
+    if (cal.length){const l=cal[cal.length-1];document.getElementById('lv-cal').innerHTML=[1,2,3,4].map(i=>`<span>CH${i}: ${l[`ch${i}`].toFixed(1)}°C</span>`).join('');}
+
+    chartReo.data.labels=reo.map(p=>p.tempo_s);
+    chartReo.data.datasets[0].data=reo.map(p=>p.amperagem); chartReo.update();
+    if (reo.length){const l=reo[reo.length-1];document.getElementById('lv-reo').innerHTML=`<span>Amp: ${l.amperagem.toFixed(2)} A</span><span>@ ${l.tempo_s.toFixed(0)} s</span>`;}
+
+  } catch {
+    document.getElementById('dot-flask').className='dot off';
+    document.getElementById('txt-flask').textContent='Flask offline';
+    addLog('Servidor Flask não encontrado','warn');
+  }
+}
+
+poll();
+setInterval(poll, POLL);
+</script>
+</body>
+</html>

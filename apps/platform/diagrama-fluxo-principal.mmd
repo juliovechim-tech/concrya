@@ -1,0 +1,127 @@
+flowchart TB
+    subgraph ENTRADA["Entrada do Usuario"]
+        HOME["Landing Page /"]
+        LOGIN["OAuth Login"]
+        FERRAMENTA_FREE["Ferramenta Gratuita\n/otimizacao-agregados"]
+    end
+
+    subgraph AUTH["Autenticacao"]
+        OAUTH_CB["OAuth Callback\n/api/oauth/callback"]
+        JWT["Gera JWT + Cookie"]
+        UPSERT_USER["Cria/Atualiza Usuario\nno MySQL"]
+    end
+
+    subgraph PLANOS["Sistema de Planos"]
+        GRATUITO["Gratuito\n3 tracos, sem exportacao"]
+        TECNICO["Tecnico\nAbrams, exportacao, tracos ilimitados"]
+        AVANCADO["Avancado\nLaboratorio, CAA, HPC"]
+        CIENTIFICO["Cientifico\nUHPC, Larrard, Ductal"]
+        TRIAL["Trial 7 dias"]
+        HOTMART["Hotmart Webhook\n/api/webhook/hotmart"]
+    end
+
+    subgraph CALCULADORAS["Calculadoras de Dosagem"]
+        CALC_BASICO["Nivel Basico\nMedidas praticas\n/nivel/basico"]
+        CALC_TECNICO["Nivel Tecnico\nABCP/ACI\n/nivel/tecnico"]
+        CALC_AVANCADO["Nivel Avancado\nCAA, HPC\n/nivel/avancado"]
+        CALC_CIENTIFICO["Nivel Cientifico\nUHPC, Larrard\n/nivel/cientifico"]
+        CALC_ABRAMS["Curva de Abrams\n/abrams"]
+    end
+
+    subgraph DADOS["Banco de Dados do Usuario"]
+        MATERIAIS["Materiais\nCimento, areia, brita,\nfiller, aditivos, fibras"]
+        TRACOS["Tracos Salvos\nComposicao, custos,\nparametros"]
+        ENSAIOS["Ensaios\nResistencia por idade\nR1 a R180"]
+        CURVAS["Curvas de Abrams\nk1, k2, pontos\ncalibrados"]
+        HISTORICO["Historico de Custos\nEvolucao de preco/m3"]
+    end
+
+    subgraph LABORATORIO["Laboratorio"]
+        BATELADAS["Bateladas de Teste\n/laboratorio/bateladas"]
+        CORTE_AGUA["Corte de Agua\n/laboratorio/corte-agua"]
+        CADASTRO_ENSAIOS["Cadastro de Ensaios\n/laboratorio/cadastro-ensaios"]
+    end
+
+    subgraph ADMIN["Painel Admin"]
+        ADMIN_USERS["Gerenciar Usuarios"]
+        ADMIN_LICENCAS["Gerenciar Licencas"]
+        ADMIN_LEADS["Painel de Leads"]
+    end
+
+    subgraph MONETIZACAO["Monetizacao"]
+        PRICING["Pagina de Pricing\n/pricing"]
+        LEAD_CAPTURE["Captura de Leads\nEmail antes dos resultados"]
+        LANDING["Landing de Vendas\n/landing"]
+        OBRIGADO["Pagina Obrigado\n/obrigado\nPixel FB + WhatsApp"]
+    end
+
+    subgraph EXTRAS["Funcionalidades Extras"]
+        EXPORT["Exportacao\nCSV / Excel"]
+        WHATSAPP["Envio WhatsApp\nFichas de traco"]
+        DOWNLOADS["Downloads\nPlanilhas corrigidas"]
+        CONSULTORIA["Consultoria\nCalendly integrado"]
+    end
+
+    %% Fluxo principal
+    HOME -->|"Visitante"| FERRAMENTA_FREE
+    HOME -->|"Fazer Login"| LOGIN
+    FERRAMENTA_FREE -->|"Captura email"| LEAD_CAPTURE
+    LEAD_CAPTURE -->|"Upsell"| PRICING
+
+    LOGIN --> OAUTH_CB --> JWT --> UPSERT_USER
+    UPSERT_USER -->|"Verifica licenca"| GRATUITO
+
+    %% Compra
+    PRICING --> HOTMART
+    HOTMART -->|"PURCHASE_COMPLETE"| TECNICO
+    HOTMART -->|"PURCHASE_COMPLETE"| AVANCADO
+    HOTMART -->|"PURCHASE_COMPLETE"| CIENTIFICO
+    GRATUITO -->|"Iniciar trial"| TRIAL
+
+    %% Acesso por plano
+    GRATUITO --> CALC_BASICO
+    TECNICO --> CALC_TECNICO
+    TECNICO --> CALC_ABRAMS
+    AVANCADO --> CALC_AVANCADO
+    AVANCADO --> LABORATORIO
+    CIENTIFICO --> CALC_CIENTIFICO
+
+    %% Dados
+    CALC_BASICO & CALC_TECNICO & CALC_AVANCADO & CALC_CIENTIFICO -->|"Salvar"| TRACOS
+    TRACOS --> HISTORICO
+    TRACOS -->|"Vincular"| ENSAIOS
+    CALC_ABRAMS -->|"Salvar"| CURVAS
+    MATERIAIS -->|"Usar em"| CALC_BASICO & CALC_TECNICO & CALC_AVANCADO & CALC_CIENTIFICO
+
+    %% Lab
+    BATELADAS -->|"Seleciona traco"| TRACOS
+    CORTE_AGUA -->|"Seleciona traco"| TRACOS
+    CADASTRO_ENSAIOS -->|"Registra"| ENSAIOS
+
+    %% Export
+    TRACOS --> EXPORT
+    TRACOS --> WHATSAPP
+
+    %% Admin
+    ADMIN_USERS -->|"Promover admin"| UPSERT_USER
+    ADMIN_LICENCAS -->|"CRUD licencas"| TECNICO & AVANCADO & CIENTIFICO
+    ADMIN_LEADS --> LEAD_CAPTURE
+
+    %% Monetizacao
+    LANDING --> PRICING
+    HOTMART -->|"Pos-compra"| OBRIGADO
+
+    %% Estilo
+    classDef free fill:#22c55e,color:#fff,stroke:#16a34a
+    classDef tecnico fill:#3b82f6,color:#fff,stroke:#2563eb
+    classDef avancado fill:#f59e0b,color:#fff,stroke:#d97706
+    classDef cientifico fill:#ef4444,color:#fff,stroke:#dc2626
+    classDef admin fill:#8b5cf6,color:#fff,stroke:#7c3aed
+    classDef money fill:#ff6b35,color:#fff,stroke:#cc5500
+
+    class GRATUITO,CALC_BASICO,FERRAMENTA_FREE free
+    class TECNICO,CALC_TECNICO,CALC_ABRAMS tecnico
+    class AVANCADO,CALC_AVANCADO,BATELADAS,CORTE_AGUA,CADASTRO_ENSAIOS avancado
+    class CIENTIFICO,CALC_CIENTIFICO cientifico
+    class ADMIN_USERS,ADMIN_LICENCAS,ADMIN_LEADS admin
+    class PRICING,LEAD_CAPTURE,LANDING,OBRIGADO,HOTMART money

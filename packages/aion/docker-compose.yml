@@ -1,0 +1,39 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: aion
+      POSTGRES_PASSWORD: aion
+      POSTGRES_DB: aion
+    ports:
+      - "5432:5432"
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U aion"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  api:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      DATABASE_URL: postgresql+psycopg2://aion:aion@db:5432/aion
+      # Session auth (substitui AION_API_KEY — a chave nunca vai ao browser)
+      AION_SESSION_SECRET: ${AION_SESSION_SECRET:-change-me-in-production}
+      AION_LOGIN_USER:     ${AION_LOGIN_USER:-admin}
+      AION_LOGIN_PASS:     ${AION_LOGIN_PASS:-admin123}
+      # Configuração de planta padrão para o job semanal
+      AION_PLANT_ID: ${AION_PLANT_ID:-PLANTA-01}
+    depends_on:
+      db:
+        condition: service_healthy
+    command: >
+      bash -c "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port 8000"
+
+volumes:
+  pg_data:

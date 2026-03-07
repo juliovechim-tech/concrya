@@ -1,0 +1,41 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --font-mono: "IBM Plex Mono", "Fira Code", "Cascadia Code", monospace;
+  --color-amber:   #D97706;
+  --color-bg:      #020617;
+  --color-border:  #1E293B;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: var(--font-mono);
+  background: var(--color-bg);
+}
+
+/* Scrollbar estilo terminal */
+::-webkit-scrollbar       { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: #0F172A; }
+::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #475569; }
+
+/* Select sem seta nativa no WebKit */
+select { appearance: none; -webkit-appearance: none; }
+
+/* Estilos de impressão para planilha de pesagem */
+@media print {
+  nav, aside, button, .print\\:hidden { display: none !important; }
+  main { margin: 0 !important; padding: 20px !important; width: 100% !important; max-width: 100% !important; }
+  body { background: white !important; color: black !important; font-size: 10pt; }
+  table { border-collapse: collapse; width: 100%; }
+  td, th { border: 1px solid #333; padding: 4px 8px; color: black !important; }
+  .text-amber-400, .text-slate-200, .text-slate-300, .text-slate-400,
+  .text-slate-500, .text-slate-600 { color: black !important; }
+  .bg-slate-950, .bg-slate-900, [class*="bg-amber-600"] { background: white !important; }
+  .border-slate-800, [class*="border-amber-600"] { border-color: #ccc !important; }
+}

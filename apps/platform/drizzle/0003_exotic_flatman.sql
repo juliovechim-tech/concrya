@@ -1,0 +1,43 @@
+CREATE TABLE `assinaturas_hotmart` (
+	`id` int AUTO_INCREMENT NOT NULL,
+	`userId` int NOT NULL,
+	`licencaId` int,
+	`transactionId` varchar(100),
+	`subscriptionId` varchar(100),
+	`productId` varchar(100),
+	`planId` varchar(100),
+	`status` enum('active','inactive','delayed','cancelled_by_customer','cancelled_by_seller','cancelled_by_admin','overdue','expired','trial','refunded') NOT NULL DEFAULT 'active',
+	`valorPago` decimal(10,2),
+	`moeda` varchar(10) DEFAULT 'BRL',
+	`metodoPagamento` varchar(50),
+	`dataCompra` timestamp,
+	`dataProximaCobranca` timestamp,
+	`dataCancelamento` timestamp,
+	`compradorEmail` varchar(320),
+	`compradorNome` varchar(255),
+	`compradorDocumento` varchar(20),
+	`webhookPayload` json,
+	`createdAt` timestamp NOT NULL DEFAULT (now()),
+	`updatedAt` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,
+	CONSTRAINT `assinaturas_hotmart_id` PRIMARY KEY(`id`),
+	CONSTRAINT `assinaturas_hotmart_transactionId_unique` UNIQUE(`transactionId`)
+);
+--> statement-breakpoint
+CREATE TABLE `planos` (
+	`id` int AUTO_INCREMENT NOT NULL,
+	`codigo` varchar(50) NOT NULL,
+	`nome` varchar(100) NOT NULL,
+	`descricao` text,
+	`precoMensal` decimal(10,2) NOT NULL,
+	`precoAnual` decimal(10,2) NOT NULL,
+	`hotmartProductIdMensal` varchar(100),
+	`hotmartProductIdAnual` varchar(100),
+	`permissoes` json,
+	`limites` json,
+	`ativo` enum('sim','nao') NOT NULL DEFAULT 'sim',
+	`ordem` int DEFAULT 0,
+	`createdAt` timestamp NOT NULL DEFAULT (now()),
+	`updatedAt` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,
+	CONSTRAINT `planos_id` PRIMARY KEY(`id`),
+	CONSTRAINT `planos_codigo_unique` UNIQUE(`codigo`)
+);

@@ -1,0 +1,1536 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Otimização de Agregados por Densidade | Mestres do Concreto</title>
+    <meta name="description" content="Ferramenta gratuita para otimização do esqueleto granular de agregados pelo método de massa unitária compactada (NBR NM 45)">
+    <style>
+        :root {
+            --bg-primary: #0f0f0f;
+            --bg-secondary: #1a1a1a;
+            --bg-card: #252525;
+            --text-primary: #ffffff;
+            --text-secondary: #a0a0a0;
+            --text-muted: #666666;
+            --accent-orange: #F59E0B;
+            --accent-orange-dark: #D97706;
+            --accent-green: #22C55E;
+            --accent-red: #EF4444;
+            --accent-blue: #3B82F6;
+            --border-color: #333333;
+            --border-dashed: #444444;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        /* Header */
+        .header {
+            background-color: var(--bg-secondary);
+            border-bottom: 1px solid var(--border-color);
+            padding: 1rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            text-decoration: none;
+            color: var(--text-primary);
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--accent-orange), var(--accent-orange-dark));
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .logo-text {
+            font-weight: 700;
+            font-size: 1.1rem;
+            letter-spacing: -0.5px;
+        }
+
+        .logo-text span {
+            color: var(--accent-orange);
+        }
+
+        .header-badge {
+            background: var(--accent-green);
+            color: #000;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* Page Title */
+        .page-title {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .page-title h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+        }
+
+        .page-title h1 svg {
+            color: var(--accent-orange);
+        }
+
+        .page-title p {
+            color: var(--text-secondary);
+            font-size: 1rem;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .tab {
+            padding: 0.75rem 1.5rem;
+            background: transparent;
+            border: 2px dashed var(--border-dashed);
+            border-radius: 8px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .tab:hover {
+            border-color: var(--accent-orange);
+            color: var(--accent-orange);
+        }
+
+        .tab.active {
+            background: var(--accent-orange);
+            border-color: var(--accent-orange);
+            color: #000;
+        }
+
+        /* Cards */
+        .card {
+            background: var(--bg-card);
+            border: 2px dashed var(--border-dashed);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .card-header svg {
+            color: var(--accent-orange);
+        }
+
+        .card-header h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .card-header .badge {
+            margin-left: auto;
+            background: var(--bg-secondary);
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        /* Grid Layout */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+        }
+
+        @media (max-width: 1024px) {
+            .grid-3 {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .grid-2, .grid-3 {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Form Elements */
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 1rem;
+            transition: border-color 0.2s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--accent-orange);
+        }
+
+        .form-group input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: var(--accent-orange);
+            color: #000;
+        }
+
+        .btn-primary:hover {
+            background: var(--accent-orange-dark);
+        }
+
+        .btn-secondary {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--accent-orange);
+        }
+
+        .btn-success {
+            background: var(--accent-green);
+            color: #000;
+        }
+
+        .btn-danger {
+            background: var(--accent-red);
+            color: #fff;
+        }
+
+        .btn-sm {
+            padding: 0.5rem 1rem;
+            font-size: 0.8rem;
+        }
+
+        /* Table */
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+
+        th, td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        th {
+            background: var(--bg-secondary);
+            font-weight: 600;
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+            text-transform: uppercase;
+        }
+
+        td {
+            color: var(--text-primary);
+        }
+
+        tr:hover td {
+            background: rgba(245, 158, 11, 0.05);
+        }
+
+        .table-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        /* Agregados List */
+        .agregado-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            margin-bottom: 0.75rem;
+        }
+
+        .agregado-item .info {
+            flex: 1;
+        }
+
+        .agregado-item .name {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .agregado-item .details {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .agregado-item .tipo-badge {
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .tipo-graudo {
+            background: rgba(59, 130, 246, 0.2);
+            color: var(--accent-blue);
+        }
+
+        .tipo-miudo {
+            background: rgba(34, 197, 94, 0.2);
+            color: var(--accent-green);
+        }
+
+        /* Ensaio Section */
+        .ensaio-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+
+        .ensaio-step {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--accent-orange);
+            font-weight: 600;
+        }
+
+        .step-number {
+            width: 28px;
+            height: 28px;
+            background: var(--accent-orange);
+            color: #000;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+        }
+
+        /* Results */
+        .result-box {
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(245, 158, 11, 0.05));
+            border: 2px solid var(--accent-orange);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .result-box .label {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+        }
+
+        .result-box .value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--accent-orange);
+        }
+
+        .result-box .unit {
+            font-size: 1rem;
+            color: var(--text-secondary);
+        }
+
+        /* Chart Container */
+        .chart-container {
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-top: 1rem;
+        }
+
+        .chart-svg {
+            width: 100%;
+            height: 300px;
+        }
+
+        /* Proporções Result */
+        .proporcoes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .proporcao-item {
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .proporcao-item .nome {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .proporcao-item .valor {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--accent-green);
+        }
+
+        /* Info Box */
+        .info-box {
+            background: rgba(59, 130, 246, 0.1);
+            border-left: 4px solid var(--accent-blue);
+            padding: 1rem;
+            border-radius: 0 8px 8px 0;
+            margin-bottom: 1rem;
+        }
+
+        .info-box p {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--bg-secondary);
+            border-top: 1px solid var(--border-color);
+            padding: 2rem;
+            margin-top: 3rem;
+            text-align: center;
+        }
+
+        .footer p {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        .footer a {
+            color: var(--accent-orange);
+            text-decoration: none;
+        }
+
+        /* Granulometria Table */
+        .granulometria-input {
+            width: 80px;
+            padding: 0.5rem;
+            text-align: center;
+        }
+
+        /* Hidden sections */
+        .section {
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        /* Peneiras padrão */
+        .peneiras-info {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 0.5rem;
+        }
+
+        /* Empty state */
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: var(--text-muted);
+        }
+
+        .empty-state svg {
+            width: 64px;
+            height: 64px;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        /* Progress bar */
+        .progress-bar {
+            height: 8px;
+            background: var(--bg-secondary);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 0.5rem;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--accent-orange);
+            transition: width 0.3s;
+        }
+
+        /* Action buttons row */
+        .action-row {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        /* Print styles */
+        @media print {
+            body {
+                background: white;
+                color: black;
+            }
+            .header, .tabs, .btn, .action-row {
+                display: none;
+            }
+            .card {
+                border: 1px solid #ccc;
+                break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <a href="https://mestredosag-tccgfhwm.manus.space/" class="logo">
+                <div class="logo-icon">🏗️</div>
+                <div class="logo-text">MESTRES DO <span>CONCRETO</span></div>
+            </a>
+            <span class="header-badge">FERRAMENTA GRATUITA</span>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Page Title -->
+        <div class="page-title">
+            <h1>
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"/>
+                    <path d="M12 6v6l4 2"/>
+                </svg>
+                Otimização de Agregados por Densidade
+            </h1>
+            <p>Método de Massa Unitária Compactada (NBR NM 45) - Baseado na metodologia Tutikian</p>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab active" onclick="showSection('materiais')">
+                📦 1. Cadastro de Materiais
+            </button>
+            <button class="tab" onclick="showSection('granulometria')">
+                📊 2. Granulometria
+            </button>
+            <button class="tab" onclick="showSection('ensaio')">
+                🧪 3. Ensaio de Empacotamento
+            </button>
+            <button class="tab" onclick="showSection('resultados')">
+                📈 4. Resultados
+            </button>
+        </div>
+
+        <!-- Section 1: Cadastro de Materiais -->
+        <section id="materiais" class="section active">
+            <div class="grid-2">
+                <!-- Formulário de Cadastro -->
+                <div class="card">
+                    <div class="card-header">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 5v14M5 12h14"/>
+                        </svg>
+                        <h3>Adicionar Agregado</h3>
+                    </div>
+
+                    <div class="info-box">
+                        <p>Cadastre os agregados que serão utilizados no ensaio de empacotamento. Você pode adicionar até 6 agregados (graúdos e miúdos).</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Nome do Agregado</label>
+                        <input type="text" id="nome-agregado" placeholder="Ex: Brita 1, Areia Média, Pedrisco...">
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Tipo</label>
+                            <select id="tipo-agregado">
+                                <option value="graudo">Graúdo (Brita)</option>
+                                <option value="miudo">Miúdo (Areia)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Massa Específica (kg/m³)</label>
+                            <input type="number" id="massa-especifica" placeholder="2650" step="10">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>D. Máx. Característico (mm)</label>
+                            <input type="number" id="dmax" placeholder="19" step="0.1">
+                        </div>
+                        <div class="form-group">
+                            <label>Módulo de Finura</label>
+                            <input type="number" id="modulo-finura" placeholder="2.4" step="0.01">
+                        </div>
+                    </div>
+
+                    <button class="btn btn-primary" onclick="adicionarAgregado()">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 5v14M5 12h14"/>
+                        </svg>
+                        Adicionar Agregado
+                    </button>
+                </div>
+
+                <!-- Lista de Agregados -->
+                <div class="card">
+                    <div class="card-header">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+                        </svg>
+                        <h3>Agregados Cadastrados</h3>
+                        <span class="badge" id="count-agregados">0 materiais</span>
+                    </div>
+
+                    <div id="lista-agregados">
+                        <div class="empty-state">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+                                <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+                            </svg>
+                            <p>Nenhum agregado cadastrado</p>
+                            <p style="font-size: 0.8rem;">Adicione pelo menos 2 agregados para iniciar</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 2: Granulometria -->
+        <section id="granulometria" class="section">
+            <div class="card">
+                <div class="card-header">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 3v18h18"/>
+                        <path d="M18 17V9"/>
+                        <path d="M13 17V5"/>
+                        <path d="M8 17v-3"/>
+                    </svg>
+                    <h3>Granulometria dos Agregados</h3>
+                    <span class="badge">Opcional</span>
+                </div>
+
+                <div class="info-box">
+                    <p><strong>Opcional:</strong> Se você já possui os dados de granulometria dos agregados, preencha abaixo. Caso contrário, pule para a etapa de Ensaio de Empacotamento. A granulometria é útil para verificar enquadramento nas zonas ABNT e calcular módulo de finura.</p>
+                </div>
+
+                <div id="granulometria-tables">
+                    <p style="color: var(--text-muted); text-align: center; padding: 2rem;">
+                        Cadastre agregados na aba anterior para inserir granulometria
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 3: Ensaio de Empacotamento -->
+        <section id="ensaio" class="section">
+            <!-- Configuração do Recipiente -->
+            <div class="card">
+                <div class="card-header">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                        <polyline points="14 2 14 8 20 8"/>
+                    </svg>
+                    <h3>Configuração do Recipiente (NBR NM 45)</h3>
+                </div>
+
+                <div class="info-box">
+                    <p>Informe os dados do recipiente utilizado no ensaio de massa unitária compactada. O volume típico é de 15 a 30 litros para agregados graúdos.</p>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Volume do Recipiente (L)</label>
+                        <input type="number" id="volume-recipiente" value="15" step="0.1">
+                    </div>
+                    <div class="form-group">
+                        <label>Massa do Recipiente Vazio (kg)</label>
+                        <input type="number" id="massa-recipiente" value="5.0" step="0.01">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Etapas do Ensaio -->
+            <div id="etapas-ensaio">
+                <div class="empty-state">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+                        <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+                    </svg>
+                    <p>Cadastre pelo menos 2 agregados para iniciar o ensaio</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 4: Resultados -->
+        <section id="resultados" class="section">
+            <div class="grid-2">
+                <!-- Resultado Principal -->
+                <div class="card">
+                    <div class="card-header">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                            <polyline points="22 4 12 14.01 9 11.01"/>
+                        </svg>
+                        <h3>Proporção Ótima</h3>
+                    </div>
+
+                    <div id="resultado-proporcoes">
+                        <div class="empty-state">
+                            <p>Complete o ensaio de empacotamento para ver os resultados</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Índice de Vazios -->
+                <div class="card">
+                    <div class="card-header">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <path d="M12 16v-4"/>
+                            <path d="M12 8h.01"/>
+                        </svg>
+                        <h3>Índice de Vazios Mínimo</h3>
+                    </div>
+
+                    <div id="resultado-vazios">
+                        <div class="empty-state">
+                            <p>Complete o ensaio para ver o índice de vazios</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Gráfico -->
+            <div class="card">
+                <div class="card-header">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 3v18h18"/>
+                        <path d="M18 17V9"/>
+                        <path d="M13 17V5"/>
+                        <path d="M8 17v-3"/>
+                    </svg>
+                    <h3>Gráfico de Vazios vs. Proporção</h3>
+                </div>
+
+                <div class="chart-container">
+                    <svg id="chart-vazios" class="chart-svg" viewBox="0 0 600 300">
+                        <text x="300" y="150" text-anchor="middle" fill="#666">
+                            Complete o ensaio para visualizar o gráfico
+                        </text>
+                    </svg>
+                </div>
+            </div>
+
+            <!-- Ações -->
+            <div class="action-row">
+                <button class="btn btn-primary" onclick="exportarCSV()">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                        <polyline points="7 10 12 15 17 10"/>
+                        <line x1="12" y1="15" x2="12" y2="3"/>
+                    </svg>
+                    Exportar CSV
+                </button>
+                <button class="btn btn-secondary" onclick="window.print()">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="6 9 6 2 18 2 18 9"/>
+                        <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/>
+                        <rect x="6" y="14" width="12" height="8"/>
+                    </svg>
+                    Imprimir Relatório
+                </button>
+                <button class="btn btn-success" onclick="salvarBancoDados()">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+                        <polyline points="17 21 17 13 7 13 7 21"/>
+                        <polyline points="7 3 7 8 15 8"/>
+                    </svg>
+                    Salvar no Banco de Dados
+                </button>
+            </div>
+        </section>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>© 2025 <a href="https://mestresconcreto.com.br" target="_blank">Mestres do Concreto</a>. Todos os direitos reservados.</p>
+        <p style="margin-top: 0.5rem;">Método baseado na NBR NM 45 - Agregados - Determinação da massa unitária e do volume de vazios</p>
+        <p style="margin-top: 0.5rem; font-size: 0.75rem;">Referência: TUTIKIAN, B.F. - Método de dosagem de concreto</p>
+    </footer>
+
+    <script>
+        // Estado da aplicação
+        let agregados = [];
+        let ensaios = {};
+        let resultadosEtapas = [];
+
+        // Peneiras padrão ABNT
+        const peneirasGraudo = [75, 63, 50, 37.5, 31.5, 25, 19, 12.5, 9.5, 6.3, 4.75];
+        const peneirasMiudo = [9.5, 6.3, 4.75, 2.36, 1.18, 0.6, 0.3, 0.15, 0.075];
+
+        // Carregar dados do localStorage
+        function carregarDados() {
+            const saved = localStorage.getItem('otimizacao-agregados');
+            if (saved) {
+                const data = JSON.parse(saved);
+                agregados = data.agregados || [];
+                ensaios = data.ensaios || {};
+                resultadosEtapas = data.resultadosEtapas || [];
+                atualizarListaAgregados();
+                atualizarGranulometria();
+                atualizarEtapasEnsaio();
+            }
+        }
+
+        // Salvar dados no localStorage
+        function salvarDados() {
+            localStorage.setItem('otimizacao-agregados', JSON.stringify({
+                agregados,
+                ensaios,
+                resultadosEtapas
+            }));
+        }
+
+        // Mostrar seção
+        function showSection(sectionId) {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            
+            document.getElementById(sectionId).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        // Adicionar agregado
+        function adicionarAgregado() {
+            const nome = document.getElementById('nome-agregado').value.trim();
+            const tipo = document.getElementById('tipo-agregado').value;
+            const massaEspecifica = parseFloat(document.getElementById('massa-especifica').value);
+            const dmax = parseFloat(document.getElementById('dmax').value);
+            const moduloFinura = parseFloat(document.getElementById('modulo-finura').value);
+
+            if (!nome) {
+                alert('Informe o nome do agregado');
+                return;
+            }
+
+            if (!massaEspecifica || massaEspecifica <= 0) {
+                alert('Informe a massa específica válida');
+                return;
+            }
+
+            if (agregados.length >= 6) {
+                alert('Máximo de 6 agregados permitido');
+                return;
+            }
+
+            agregados.push({
+                id: Date.now(),
+                nome,
+                tipo,
+                massaEspecifica,
+                dmax: dmax || null,
+                moduloFinura: moduloFinura || null,
+                granulometria: {}
+            });
+
+            // Limpar formulário
+            document.getElementById('nome-agregado').value = '';
+            document.getElementById('massa-especifica').value = '';
+            document.getElementById('dmax').value = '';
+            document.getElementById('modulo-finura').value = '';
+
+            salvarDados();
+            atualizarListaAgregados();
+            atualizarGranulometria();
+            atualizarEtapasEnsaio();
+        }
+
+        // Remover agregado
+        function removerAgregado(id) {
+            if (confirm('Remover este agregado?')) {
+                agregados = agregados.filter(a => a.id !== id);
+                salvarDados();
+                atualizarListaAgregados();
+                atualizarGranulometria();
+                atualizarEtapasEnsaio();
+            }
+        }
+
+        // Atualizar lista de agregados
+        function atualizarListaAgregados() {
+            const container = document.getElementById('lista-agregados');
+            const count = document.getElementById('count-agregados');
+            
+            count.textContent = `${agregados.length} materiais`;
+
+            if (agregados.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+                            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+                        </svg>
+                        <p>Nenhum agregado cadastrado</p>
+                        <p style="font-size: 0.8rem;">Adicione pelo menos 2 agregados para iniciar</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = agregados.map(a => `
+                <div class="agregado-item">
+                    <span class="tipo-badge ${a.tipo === 'graudo' ? 'tipo-graudo' : 'tipo-miudo'}">
+                        ${a.tipo === 'graudo' ? 'GRAÚDO' : 'MIÚDO'}
+                    </span>
+                    <div class="info">
+                        <div class="name">${a.nome}</div>
+                        <div class="details">
+                            ρ = ${a.massaEspecifica} kg/m³
+                            ${a.dmax ? ` | D.máx = ${a.dmax} mm` : ''}
+                            ${a.moduloFinura ? ` | MF = ${a.moduloFinura}` : ''}
+                        </div>
+                    </div>
+                    <button class="btn btn-danger btn-sm" onclick="removerAgregado(${a.id})">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="3 6 5 6 21 6"/>
+                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                        </svg>
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        // Atualizar tabelas de granulometria
+        function atualizarGranulometria() {
+            const container = document.getElementById('granulometria-tables');
+            
+            if (agregados.length === 0) {
+                container.innerHTML = `
+                    <p style="color: var(--text-muted); text-align: center; padding: 2rem;">
+                        Cadastre agregados na aba anterior para inserir granulometria
+                    </p>
+                `;
+                return;
+            }
+
+            container.innerHTML = agregados.map(a => {
+                const peneiras = a.tipo === 'graudo' ? peneirasGraudo : peneirasMiudo;
+                
+                return `
+                    <div class="card" style="margin-top: 1rem;">
+                        <div class="card-header">
+                            <span class="tipo-badge ${a.tipo === 'graudo' ? 'tipo-graudo' : 'tipo-miudo'}">
+                                ${a.tipo === 'graudo' ? 'GRAÚDO' : 'MIÚDO'}
+                            </span>
+                            <h3>${a.nome}</h3>
+                        </div>
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Peneira (mm)</th>
+                                        ${peneiras.map(p => `<th>${p}</th>`).join('')}
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>% Retida Acum.</td>
+                                        ${peneiras.map(p => `
+                                            <td>
+                                                <input type="number" 
+                                                    class="granulometria-input" 
+                                                    data-agregado="${a.id}" 
+                                                    data-peneira="${p}"
+                                                    value="${a.granulometria[p] || ''}"
+                                                    onchange="atualizarGranulometriaValor(${a.id}, ${p}, this.value)"
+                                                    min="0" max="100" step="0.1">
+                                            </td>
+                                        `).join('')}
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <p class="peneiras-info">Informe a % retida acumulada em cada peneira</p>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Atualizar valor de granulometria
+        function atualizarGranulometriaValor(agregadoId, peneira, valor) {
+            const agregado = agregados.find(a => a.id === agregadoId);
+            if (agregado) {
+                agregado.granulometria[peneira] = parseFloat(valor) || 0;
+                salvarDados();
+            }
+        }
+
+        // Atualizar etapas do ensaio
+        function atualizarEtapasEnsaio() {
+            const container = document.getElementById('etapas-ensaio');
+            
+            if (agregados.length < 2) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+                            <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+                        </svg>
+                        <p>Cadastre pelo menos 2 agregados para iniciar o ensaio</p>
+                    </div>
+                `;
+                return;
+            }
+
+            // Ordenar: graúdos primeiro (maior para menor), depois miúdos
+            const graudos = agregados.filter(a => a.tipo === 'graudo').sort((a, b) => (b.dmax || 0) - (a.dmax || 0));
+            const miudos = agregados.filter(a => a.tipo === 'miudo').sort((a, b) => (b.moduloFinura || 0) - (a.moduloFinura || 0));
+            const ordenados = [...graudos, ...miudos];
+
+            // Gerar etapas
+            let etapasHTML = '';
+            for (let i = 1; i < ordenados.length; i++) {
+                const agregadosEtapa = ordenados.slice(0, i + 1);
+                const nomeEtapa = agregadosEtapa.map(a => a.nome).join(' + ');
+                const etapaKey = `etapa_${i}`;
+                
+                etapasHTML += `
+                    <div class="card">
+                        <div class="ensaio-header">
+                            <div class="ensaio-step">
+                                <span class="step-number">${i}</span>
+                                <span>Etapa ${i}: ${nomeEtapa}</span>
+                            </div>
+                        </div>
+
+                        <div class="info-box">
+                            <p>Misture os agregados nas proporções indicadas e determine a massa compactada no recipiente.</p>
+                        </div>
+
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Proporção (%)</th>
+                                        ${gerarColunasProporcao(i)}
+                                        <th>Massa Compactada (kg)</th>
+                                        <th>M.U.C. (kg/m³)</th>
+                                        <th>Vazios (%)</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${gerarLinhasEnsaio(etapaKey, agregadosEtapa, i)}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="action-row">
+                            <button class="btn btn-primary btn-sm" onclick="calcularEtapa('${etapaKey}', ${i})">
+                                Calcular Melhor Proporção
+                            </button>
+                        </div>
+
+                        <div id="resultado-${etapaKey}" style="margin-top: 1rem;"></div>
+                    </div>
+                `;
+            }
+
+            container.innerHTML = etapasHTML;
+        }
+
+        // Gerar colunas de proporção
+        function gerarColunasProporcao(etapa) {
+            if (etapa === 1) {
+                return '<th>Agregado 1 (%)</th><th>Agregado 2 (%)</th>';
+            }
+            return '<th>Mistura Anterior (%)</th><th>Novo Agregado (%)</th>';
+        }
+
+        // Gerar linhas do ensaio
+        function gerarLinhasEnsaio(etapaKey, agregadosEtapa, etapaNum) {
+            const proporcoes = [
+                [100, 0], [90, 10], [80, 20], [70, 30], [60, 40],
+                [50, 50], [40, 60], [30, 70], [20, 80], [10, 90], [0, 100]
+            ];
+
+            return proporcoes.map((prop, idx) => {
+                const ensaioKey = `${etapaKey}_${idx}`;
+                const massaCompactada = ensaios[ensaioKey]?.massa || '';
+                
+                return `
+                    <tr>
+                        <td>${idx + 1}</td>
+                        <td>${prop[0]}%</td>
+                        <td>${prop[1]}%</td>
+                        <td>
+                            <input type="number" 
+                                class="granulometria-input" 
+                                id="massa_${ensaioKey}"
+                                value="${massaCompactada}"
+                                onchange="salvarMassaEnsaio('${ensaioKey}', this.value)"
+                                step="0.01"
+                                placeholder="0.00">
+                        </td>
+                        <td id="muc_${ensaioKey}">-</td>
+                        <td id="vazios_${ensaioKey}">-</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // Salvar massa do ensaio
+        function salvarMassaEnsaio(ensaioKey, valor) {
+            ensaios[ensaioKey] = { massa: parseFloat(valor) || 0 };
+            salvarDados();
+        }
+
+        // Calcular etapa
+        function calcularEtapa(etapaKey, etapaNum) {
+            const volumeRecipiente = parseFloat(document.getElementById('volume-recipiente').value) / 1000; // L para m³
+            const massaRecipiente = parseFloat(document.getElementById('massa-recipiente').value);
+
+            // Ordenar agregados
+            const graudos = agregados.filter(a => a.tipo === 'graudo').sort((a, b) => (b.dmax || 0) - (a.dmax || 0));
+            const miudos = agregados.filter(a => a.tipo === 'miudo').sort((a, b) => (b.moduloFinura || 0) - (a.moduloFinura || 0));
+            const ordenados = [...graudos, ...miudos];
+            const agregadosEtapa = ordenados.slice(0, etapaNum + 1);
+
+            // Calcular massa específica média da mistura para cada proporção
+            const proporcoes = [
+                [100, 0], [90, 10], [80, 20], [70, 30], [60, 40],
+                [50, 50], [40, 60], [30, 70], [20, 80], [10, 90], [0, 100]
+            ];
+
+            let melhorVazios = 100;
+            let melhorIdx = -1;
+            let resultados = [];
+
+            proporcoes.forEach((prop, idx) => {
+                const ensaioKey = `${etapaKey}_${idx}`;
+                const massaCompactada = ensaios[ensaioKey]?.massa || 0;
+
+                if (massaCompactada > 0) {
+                    // Massa líquida (descontando recipiente)
+                    const massaLiquida = massaCompactada - massaRecipiente;
+                    
+                    // Massa unitária compactada
+                    const muc = massaLiquida / volumeRecipiente;
+
+                    // Calcular massa específica da mistura
+                    let massaEspecificaMistura;
+                    if (etapaNum === 1) {
+                        // Primeira etapa: média ponderada dos dois agregados
+                        const me1 = agregadosEtapa[0].massaEspecifica;
+                        const me2 = agregadosEtapa[1].massaEspecifica;
+                        massaEspecificaMistura = (me1 * prop[0] + me2 * prop[1]) / 100;
+                    } else {
+                        // Etapas seguintes: usar resultado anterior + novo agregado
+                        const resultadoAnterior = resultadosEtapas[etapaNum - 2];
+                        const meAnterior = resultadoAnterior?.massaEspecificaMistura || agregadosEtapa[0].massaEspecifica;
+                        const meNovo = agregadosEtapa[agregadosEtapa.length - 1].massaEspecifica;
+                        massaEspecificaMistura = (meAnterior * prop[0] + meNovo * prop[1]) / 100;
+                    }
+
+                    // Índice de vazios
+                    const vazios = ((1 - (muc / massaEspecificaMistura)) * 100);
+
+                    // Atualizar UI
+                    document.getElementById(`muc_${ensaioKey}`).textContent = muc.toFixed(1);
+                    document.getElementById(`vazios_${ensaioKey}`).textContent = vazios.toFixed(2) + '%';
+
+                    resultados.push({
+                        idx,
+                        prop,
+                        muc,
+                        vazios,
+                        massaEspecificaMistura
+                    });
+
+                    if (vazios < melhorVazios && vazios > 0) {
+                        melhorVazios = vazios;
+                        melhorIdx = idx;
+                    }
+                }
+            });
+
+            // Mostrar resultado da etapa
+            const resultadoContainer = document.getElementById(`resultado-${etapaKey}`);
+            if (melhorIdx >= 0) {
+                const melhor = resultados.find(r => r.idx === melhorIdx);
+                
+                // Salvar resultado da etapa
+                resultadosEtapas[etapaNum - 1] = {
+                    proporcao: melhor.prop,
+                    vazios: melhor.vazios,
+                    muc: melhor.muc,
+                    massaEspecificaMistura: melhor.massaEspecificaMistura,
+                    agregados: agregadosEtapa.map(a => a.nome)
+                };
+                salvarDados();
+
+                resultadoContainer.innerHTML = `
+                    <div class="result-box">
+                        <div class="label">Melhor Proporção</div>
+                        <div class="value">${melhor.prop[0]}/${melhor.prop[1]}</div>
+                        <div class="unit">Vazios: ${melhor.vazios.toFixed(2)}% | M.U.C.: ${melhor.muc.toFixed(1)} kg/m³</div>
+                    </div>
+                `;
+
+                // Atualizar resultados finais
+                atualizarResultadosFinais();
+            } else {
+                resultadoContainer.innerHTML = `
+                    <div class="info-box" style="border-color: var(--accent-red);">
+                        <p>Preencha as massas compactadas para calcular</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Atualizar resultados finais
+        function atualizarResultadosFinais() {
+            if (resultadosEtapas.length === 0) return;
+
+            const ultimaEtapa = resultadosEtapas[resultadosEtapas.length - 1];
+            
+            // Calcular proporções finais de cada agregado
+            const graudos = agregados.filter(a => a.tipo === 'graudo').sort((a, b) => (b.dmax || 0) - (a.dmax || 0));
+            const miudos = agregados.filter(a => a.tipo === 'miudo').sort((a, b) => (b.moduloFinura || 0) - (a.moduloFinura || 0));
+            const ordenados = [...graudos, ...miudos];
+
+            let proporcaoFinal = [];
+            
+            // Calcular proporção de cada agregado baseado nas etapas
+            if (resultadosEtapas.length === 1) {
+                // Apenas 2 agregados
+                proporcaoFinal = [
+                    { nome: ordenados[0].nome, proporcao: resultadosEtapas[0].proporcao[0] },
+                    { nome: ordenados[1].nome, proporcao: resultadosEtapas[0].proporcao[1] }
+                ];
+            } else {
+                // Múltiplas etapas - calcular retroativamente
+                let propAtual = 100;
+                for (let i = resultadosEtapas.length - 1; i >= 0; i--) {
+                    const etapa = resultadosEtapas[i];
+                    if (i === resultadosEtapas.length - 1) {
+                        // Última etapa
+                        proporcaoFinal.unshift({
+                            nome: ordenados[i + 1].nome,
+                            proporcao: etapa.proporcao[1]
+                        });
+                        propAtual = etapa.proporcao[0];
+                    } else if (i === 0) {
+                        // Primeira etapa
+                        proporcaoFinal.unshift({
+                            nome: ordenados[1].nome,
+                            proporcao: (etapa.proporcao[1] * propAtual / 100)
+                        });
+                        proporcaoFinal.unshift({
+                            nome: ordenados[0].nome,
+                            proporcao: (etapa.proporcao[0] * propAtual / 100)
+                        });
+                    } else {
+                        // Etapas intermediárias
+                        proporcaoFinal.unshift({
+                            nome: ordenados[i + 1].nome,
+                            proporcao: (etapa.proporcao[1] * propAtual / 100)
+                        });
+                        propAtual = etapa.proporcao[0] * propAtual / 100;
+                    }
+                }
+            }
+
+            // Mostrar proporções
+            document.getElementById('resultado-proporcoes').innerHTML = `
+                <div class="proporcoes-grid">
+                    ${proporcaoFinal.map(p => `
+                        <div class="proporcao-item">
+                            <div class="nome">${p.nome}</div>
+                            <div class="valor">${p.proporcao.toFixed(1)}%</div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+
+            // Mostrar vazios
+            document.getElementById('resultado-vazios').innerHTML = `
+                <div class="result-box">
+                    <div class="label">Índice de Vazios Final</div>
+                    <div class="value">${ultimaEtapa.vazios.toFixed(2)}<span class="unit">%</span></div>
+                    <div class="unit">Massa Unitária: ${ultimaEtapa.muc.toFixed(1)} kg/m³</div>
+                </div>
+            `;
+
+            // Desenhar gráfico
+            desenharGrafico();
+        }
+
+        // Desenhar gráfico
+        function desenharGrafico() {
+            const svg = document.getElementById('chart-vazios');
+            const width = 600;
+            const height = 300;
+            const padding = { top: 30, right: 30, bottom: 50, left: 60 };
+
+            // Coletar todos os dados de vazios
+            let todosResultados = [];
+            resultadosEtapas.forEach((etapa, etapaIdx) => {
+                const etapaKey = `etapa_${etapaIdx + 1}`;
+                for (let i = 0; i <= 10; i++) {
+                    const ensaioKey = `${etapaKey}_${i}`;
+                    if (ensaios[ensaioKey]?.massa) {
+                        const vaziosEl = document.getElementById(`vazios_${ensaioKey}`);
+                        if (vaziosEl && vaziosEl.textContent !== '-') {
+                            todosResultados.push({
+                                etapa: etapaIdx + 1,
+                                proporcao: i * 10,
+                                vazios: parseFloat(vaziosEl.textContent)
+                            });
+                        }
+                    }
+                }
+            });
+
+            if (todosResultados.length === 0) {
+                svg.innerHTML = `<text x="300" y="150" text-anchor="middle" fill="#666">Complete o ensaio para visualizar o gráfico</text>`;
+                return;
+            }
+
+            // Escalas
+            const minVazios = Math.min(...todosResultados.map(r => r.vazios)) - 2;
+            const maxVazios = Math.max(...todosResultados.map(r => r.vazios)) + 2;
+
+            const xScale = (prop) => padding.left + (prop / 100) * (width - padding.left - padding.right);
+            const yScale = (vazios) => height - padding.bottom - ((vazios - minVazios) / (maxVazios - minVazios)) * (height - padding.top - padding.bottom);
+
+            // Cores por etapa
+            const cores = ['#F59E0B', '#22C55E', '#3B82F6', '#EF4444', '#8B5CF6'];
+
+            let svgContent = `
+                <!-- Grid -->
+                <g stroke="#333" stroke-width="1">
+                    ${[0, 25, 50, 75, 100].map(p => `<line x1="${xScale(p)}" y1="${padding.top}" x2="${xScale(p)}" y2="${height - padding.bottom}" stroke-dasharray="4"/>`).join('')}
+                </g>
+
+                <!-- Eixo X -->
+                <line x1="${padding.left}" y1="${height - padding.bottom}" x2="${width - padding.right}" y2="${height - padding.bottom}" stroke="#666" stroke-width="2"/>
+                <text x="${width / 2}" y="${height - 10}" text-anchor="middle" fill="#999" font-size="12">Proporção do Novo Agregado (%)</text>
+                ${[0, 25, 50, 75, 100].map(p => `<text x="${xScale(p)}" y="${height - padding.bottom + 20}" text-anchor="middle" fill="#999" font-size="11">${p}</text>`).join('')}
+
+                <!-- Eixo Y -->
+                <line x1="${padding.left}" y1="${padding.top}" x2="${padding.left}" y2="${height - padding.bottom}" stroke="#666" stroke-width="2"/>
+                <text x="15" y="${height / 2}" text-anchor="middle" fill="#999" font-size="12" transform="rotate(-90, 15, ${height / 2})">Índice de Vazios (%)</text>
+            `;
+
+            // Agrupar por etapa
+            const etapas = [...new Set(todosResultados.map(r => r.etapa))];
+            
+            etapas.forEach((etapa, idx) => {
+                const dados = todosResultados.filter(r => r.etapa === etapa).sort((a, b) => a.proporcao - b.proporcao);
+                const cor = cores[idx % cores.length];
+
+                // Linha
+                if (dados.length > 1) {
+                    const path = dados.map((d, i) => `${i === 0 ? 'M' : 'L'} ${xScale(d.proporcao)} ${yScale(d.vazios)}`).join(' ');
+                    svgContent += `<path d="${path}" fill="none" stroke="${cor}" stroke-width="2"/>`;
+                }
+
+                // Pontos
+                dados.forEach(d => {
+                    svgContent += `<circle cx="${xScale(d.proporcao)}" cy="${yScale(d.vazios)}" r="5" fill="${cor}"/>`;
+                });
+
+                // Legenda
+                svgContent += `
+                    <rect x="${width - 120}" y="${padding.top + idx * 20}" width="12" height="12" fill="${cor}"/>
+                    <text x="${width - 100}" y="${padding.top + idx * 20 + 10}" fill="#999" font-size="11">Etapa ${etapa}</text>
+                `;
+            });
+
+            svg.innerHTML = svgContent;
+        }
+
+        // Exportar CSV
+        function exportarCSV() {
+            if (agregados.length === 0) {
+                alert('Nenhum dado para exportar');
+                return;
+            }
+
+            let csv = 'Otimização de Agregados por Densidade - Mestres do Concreto\n';
+            csv += 'Método: NBR NM 45 - Massa Unitária Compactada\n\n';
+
+            // Agregados
+            csv += 'AGREGADOS CADASTRADOS\n';
+            csv += 'Nome;Tipo;Massa Específica (kg/m³);D.máx (mm);Módulo Finura\n';
+            agregados.forEach(a => {
+                csv += `${a.nome};${a.tipo};${a.massaEspecifica};${a.dmax || '-'};${a.moduloFinura || '-'}\n`;
+            });
+
+            // Resultados das etapas
+            if (resultadosEtapas.length > 0) {
+                csv += '\nRESULTADOS DAS ETAPAS\n';
+                csv += 'Etapa;Agregados;Proporção;Vazios (%);M.U.C. (kg/m³)\n';
+                resultadosEtapas.forEach((r, i) => {
+                    csv += `${i + 1};${r.agregados.join(' + ')};${r.proporcao[0]}/${r.proporcao[1]};${r.vazios.toFixed(2)};${r.muc.toFixed(1)}\n`;
+                });
+            }
+
+            // Download
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `otimizacao_agregados_${new Date().toISOString().slice(0, 10)}.csv`;
+            link.click();
+        }
+
+        // Salvar no banco de dados (localStorage para uso posterior)
+        function salvarBancoDados() {
+            if (agregados.length === 0) {
+                alert('Nenhum agregado para salvar');
+                return;
+            }
+
+            // Salvar no formato compatível com o app Mestres do Concreto
+            const materiaisExistentes = JSON.parse(localStorage.getItem('mestres-materiais') || '[]');
+            
+            agregados.forEach(a => {
+                // Verificar se já existe
+                const existe = materiaisExistentes.find(m => m.nome === a.nome);
+                if (!existe) {
+                    materiaisExistentes.push({
+                        id: a.id,
+                        nome: a.nome,
+                        tipo: a.tipo === 'graudo' ? 'agregado_graudo' : 'agregado_miudo',
+                        densidade: a.massaEspecifica,
+                        dmax: a.dmax,
+                        moduloFinura: a.moduloFinura,
+                        granulometria: a.granulometria,
+                        origem: 'otimizacao-agregados',
+                        dataCadastro: new Date().toISOString()
+                    });
+                }
+            });
+
+            localStorage.setItem('mestres-materiais', JSON.stringify(materiaisExistentes));
+            alert(`${agregados.length} agregado(s) salvo(s) no banco de dados local!\n\nVocê pode usar esses materiais na Dosagem Rápida do app Mestres do Concreto.`);
+        }
+
+        // Inicializar
+        document.addEventListener('DOMContentLoaded', carregarDados);
+    </script>
+</body>
+</html>
