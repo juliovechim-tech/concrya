@@ -1,0 +1,31 @@
+{
+  "name": "concrya",
+  "version": "0.0.1",
+  "private": true,
+  "description": "CONCRYA Technologies — Engineering Intelligence for Concrete",
+  "scripts": {
+    "dev": "turbo dev",
+    "build": "turbo build",
+    "test": "turbo test",
+    "check": "turbo check",
+    "platform:dev": "turbo dev --filter=@concrya/platform",
+    "core-mix:dev": "turbo dev --filter=@concrya/core-mix-pro",
+    "clean": "turbo clean"
+  },
+  "devDependencies": {
+    "turbo": "^2.4.4"
+  },
+  "packageManager": "pnpm@10.4.1",
+  "pnpm": {
+    "overrides": {
+      "tailwindcss>nanoid": "3.3.7"
+    },
+    "onlyBuiltDependencies": [
+      "prisma",
+      "@prisma/client",
+      "@prisma/engines",
+      "esbuild",
+      "sharp"
+    ]
+  }
+}
