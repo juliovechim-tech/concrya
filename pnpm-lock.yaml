@@ -233,6 +233,12 @@ importers:
 
   apps/platform:
     dependencies:
+      '@concrya/engine':
+        specifier: workspace:*
+        version: link:../../packages/engine
+      '@concrya/schemas':
+        specifier: workspace:*
+        version: link:../../packages/schemas
       '@hookform/resolvers':
         specifier: ^5.2.2
         version: 5.2.2(react-hook-form@7.71.2(react@19.2.3))

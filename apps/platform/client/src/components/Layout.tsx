@@ -24,7 +24,10 @@ import {
   ChevronDown,
   CreditCard,
   Gift,
-  BarChart3
+  BarChart3,
+  Shield,
+  Layers,
+  Wrench,
 } from "lucide-react";
 import { useState } from "react";
 
@@ -32,6 +35,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const [location] = useLocation();
   const [isOpen, setIsOpen] = useState(false);
   const [labOpen, setLabOpen] = useState(false);
+  const [solOpen, setSolOpen] = useState(false);
 
   const navItems = [
     { label: "Site Principal", path: "https://mestresconcreto.com", icon: Globe, external: true },
@@ -49,7 +53,13 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     { label: "Dashboard de Custos", path: "/dashboard-custos", icon: BarChart3 },
   ];
 
+  const solucoesItems = [
+    { label: "COMPENSA CORE", path: "/compensa", icon: Shield },
+    { label: "NIVELIX", path: "/nivelix", icon: Layers },
+  ];
+
   const isLabActive = location.startsWith("/laboratorio") || location === "/dashboard-custos";
+  const isSolActive = location === "/compensa" || location === "/nivelix";
 
   return (
     <div className="min-h-screen flex flex-col bg-background text-foreground font-sans selection:bg-primary selection:text-primary-foreground">
@@ -87,6 +97,33 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               )
             ))}
             
+            {/* Soluções Verticais Dropdown */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button className={`text-sm font-medium uppercase tracking-wide hover:text-primary transition-colors cursor-pointer flex items-center gap-1 ${isSolActive ? "text-primary" : "text-muted-foreground"}`}>
+                  <Wrench className="w-4 h-4" />
+                  Soluções
+                  <ChevronDown className="w-3 h-3" />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56">
+                <DropdownMenuLabel className="text-xs text-muted-foreground uppercase tracking-wider">
+                  Soluções Verticais
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                {solucoesItems.map((item) => (
+                  <DropdownMenuItem key={item.path} asChild>
+                    <Link href={item.path}>
+                      <div className={`flex items-center gap-3 w-full cursor-pointer ${location === item.path ? "text-primary" : ""}`}>
+                        <item.icon className="w-4 h-4" />
+                        <span>{item.label}</span>
+                      </div>
+                    </Link>
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+
             {/* Laboratório Dropdown */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -156,9 +193,36 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                     )
                   ))}
                   
+                  {/* Soluções Verticais Section Mobile */}
+                  <div className="mt-4">
+                    <button
+                      onClick={() => setSolOpen(!solOpen)}
+                      className={`flex items-center justify-between w-full p-4 hover:bg-muted transition-colors cursor-pointer border border-transparent hover:border-border ${isSolActive ? "bg-muted border-primary/50" : ""}`}
+                    >
+                      <div className="flex items-center gap-4">
+                        <Wrench className={`h-5 w-5 ${isSolActive ? "text-primary" : ""}`} />
+                        <span className="font-bold uppercase tracking-wide">Soluções</span>
+                      </div>
+                      <ChevronDown className={`h-4 w-4 transition-transform ${solOpen ? "rotate-180" : ""}`} />
+                    </button>
+
+                    {solOpen && (
+                      <div className="ml-4 border-l-2 border-primary/30 pl-4 mt-2 space-y-1">
+                        {solucoesItems.map((item) => (
+                          <Link key={item.path} href={item.path} onClick={() => setIsOpen(false)}>
+                            <div className={`flex items-center gap-3 p-3 hover:bg-muted transition-colors cursor-pointer rounded ${location === item.path ? "bg-muted text-primary" : ""}`}>
+                              <item.icon className="h-4 w-4" />
+                              <span className="text-sm">{item.label}</span>
+                            </div>
+                          </Link>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+
                   {/* Laboratório Section Mobile */}
                   <div className="mt-4">
-                    <button 
+                    <button
                       onClick={() => setLabOpen(!labOpen)}
                       className={`flex items-center justify-between w-full p-4 hover:bg-muted transition-colors cursor-pointer border border-transparent hover:border-border ${isLabActive ? "bg-muted border-primary/50" : ""}`}
                     >
@@ -168,7 +232,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                       </div>
                       <ChevronDown className={`h-4 w-4 transition-transform ${labOpen ? "rotate-180" : ""}`} />
                     </button>
-                    
+
                     {labOpen && (
                       <div className="ml-4 border-l-2 border-primary/30 pl-4 mt-2 space-y-1">
                         {labItems.map((item) => (

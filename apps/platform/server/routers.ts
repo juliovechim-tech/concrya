@@ -4,10 +4,12 @@ import { systemRouter } from "./_core/systemRouter";
 import { publicProcedure, protectedProcedure, adminProcedure, router, requirePlano } from "./_core/trpc";
 import { z } from "zod";
 import { getDb } from "./db";
-import { materiais, tracos, ensaios, curvasAbrams, historicoCustos, licencas, historicoLicencas, users, assinaturasHotmart, planos, leads } from "../drizzle/schema";
+import { materiais, tracos, ensaios, curvasAbrams, historicoCustos, licencas, historicoLicencas, users, assinaturasHotmart, planos, leads, calculations } from "../drizzle/schema";
 import { and, count } from "drizzle-orm";
 import { eq, desc } from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
+import { runPipeline } from "@concrya/engine/pipeline";
+import type { MixInput } from "@concrya/schemas";
 
 // Limites de traços por nível de plano
 const LIMITE_TRACOS: Record<string, number> = {
@@ -53,6 +55,20 @@ async function verificarLimiteTracos(db: NonNullable<Awaited<ReturnType<typeof g
 const tecnicoProcedure = protectedProcedure.use(requirePlano("tecnico"));
 const avancadoProcedure = protectedProcedure.use(requirePlano("avancado"));
 const cientificoProcedure = protectedProcedure.use(requirePlano("cientifico"));
+
+// Schema Zod para MixInput (validacao server-side)
+const mixInputSchema = z.object({
+  cimentoType: z.string().min(1),
+  fck: z.number().min(1).max(200),
+  ac: z.number().min(0.20).max(0.90),
+  slump: z.number().min(0).max(800),
+  consumoCimento: z.number().min(50).max(1200),
+  consumoAgua: z.number().min(50).max(500),
+  consumoAreia: z.number().min(0).max(1500),
+  consumoBrita: z.number().min(0).max(1500),
+  adicoes: z.record(z.string(), z.number()).optional(),
+  project: z.string().optional(),
+});
 
 export const appRouter = router({
   system: systemRouter,
@@ -799,6 +815,53 @@ export const appRouter = router({
       if (!db) return [];
       return db.select().from(leads).orderBy(desc(leads.createdAt));
     }),
+  }),
+
+  // COMPENSA CORE Router
+  compensa: router({
+    calculate: avancadoProcedure
+      .input(mixInputSchema)
+      .mutation(async ({ ctx, input }) => {
+        const packet = runPipeline(input);
+
+        // Logar no DB
+        const db = await getDb();
+        if (db) {
+          await db.insert(calculations).values({
+            userId: ctx.user.id,
+            feature: "compensa",
+            input: input,
+            output: packet,
+          });
+        }
+
+        return packet;
+      }),
+  }),
+
+  // NIVELIX Router
+  nivelix: router({
+    calculate: avancadoProcedure
+      .input(mixInputSchema.extend({
+        temFibra: z.boolean().default(false),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const { temFibra: _temFibra, ...mixData } = input;
+        const packet = runPipeline(mixData);
+
+        // Logar no DB
+        const db = await getDb();
+        if (db) {
+          await db.insert(calculations).values({
+            userId: ctx.user.id,
+            feature: "nivelix",
+            input: input,
+            output: packet,
+          });
+        }
+
+        return packet;
+      }),
   }),
 });
 

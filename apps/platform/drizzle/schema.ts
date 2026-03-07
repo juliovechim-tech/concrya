@@ -293,3 +293,18 @@ export const leads = mysqlTable("leads", {
 
 export type Lead = typeof leads.$inferSelect;
 export type InsertLead = typeof leads.$inferInsert;
+
+/**
+ * Calculations - Log de calculos executados (COMPENSA, NIVELIX, etc.)
+ */
+export const calculations = mysqlTable("calculations", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  feature: varchar("feature", { length: 32 }).notNull(), // "compensa" | "nivelix"
+  input: json("input").notNull(),
+  output: json("output").notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type Calculation = typeof calculations.$inferSelect;
+export type InsertCalculation = typeof calculations.$inferInsert;

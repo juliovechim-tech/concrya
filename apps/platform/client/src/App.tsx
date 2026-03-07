@@ -32,6 +32,8 @@ const OtimizacaoAgregados = lazy(() => import("./pages/OtimizacaoAgregados"));
 const AdminLeads = lazy(() => import("./pages/AdminLeads"));
 const DosagemAvancada = lazy(() => import("./pages/DosagemAvancada"));
 const DashboardCustos = lazy(() => import("./pages/DashboardCustos"));
+const CompensaCore = lazy(() => import("./pages/CompensaCore"));
+const NivelixCore = lazy(() => import("./pages/NivelixCore"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 function PageLoader() {
@@ -78,6 +80,9 @@ function Router() {
           <Route path={"/laboratorio/bateladas"} component={BateledasTeste} />
           <Route path={"/laboratorio/corte-agua"} component={CorteAgua} />
           <Route path={"/laboratorio/cadastro-ensaios"} component={CadastroEnsaios} />
+          {/* Solucoes Verticais */}
+          <Route path={"/compensa"} component={CompensaCore} />
+          <Route path={"/nivelix"} component={NivelixCore} />
           <Route path={"/404"} component={NotFound} />
           {/* Final fallback route */}
           <Route component={NotFound} />
