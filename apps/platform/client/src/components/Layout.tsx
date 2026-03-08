@@ -28,6 +28,7 @@ import {
   Shield,
   Layers,
   Wrench,
+  Leaf,
 } from "lucide-react";
 import { useState } from "react";
 
@@ -56,10 +57,11 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const solucoesItems = [
     { label: "COMPENSA CORE", path: "/compensa", icon: Shield },
     { label: "NIVELIX", path: "/nivelix", icon: Layers },
+    { label: "ECORISK", path: "/ecorisk", icon: Leaf },
   ];
 
   const isLabActive = location.startsWith("/laboratorio") || location === "/dashboard-custos";
-  const isSolActive = location === "/compensa" || location === "/nivelix";
+  const isSolActive = location === "/compensa" || location === "/nivelix" || location === "/ecorisk";
 
   return (
     <div className="min-h-screen flex flex-col bg-background text-foreground font-sans selection:bg-primary selection:text-primary-foreground">

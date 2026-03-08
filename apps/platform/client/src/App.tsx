@@ -34,6 +34,7 @@ const DosagemAvancada = lazy(() => import("./pages/DosagemAvancada"));
 const DashboardCustos = lazy(() => import("./pages/DashboardCustos"));
 const CompensaCore = lazy(() => import("./pages/CompensaCore"));
 const NivelixCore = lazy(() => import("./pages/NivelixCore"));
+const EcoriskCore = lazy(() => import("./pages/EcoriskCore"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 function PageLoader() {
@@ -83,6 +84,7 @@ function Router() {
           {/* Solucoes Verticais */}
           <Route path={"/compensa"} component={CompensaCore} />
           <Route path={"/nivelix"} component={NivelixCore} />
+          <Route path={"/ecorisk"} component={EcoriskCore} />
           <Route path={"/404"} component={NotFound} />
           {/* Final fallback route */}
           <Route component={NotFound} />
