@@ -300,10 +300,11 @@ export type InsertLead = typeof leads.$inferInsert;
 export const calculations = mysqlTable("calculations", {
   id: int("id").autoincrement().primaryKey(),
   userId: int("userId").notNull(),
-  feature: varchar("feature", { length: 32 }).notNull(), // "compensa" | "nivelix"
+  feature: varchar("feature", { length: 32 }).notNull(), // "compensa" | "nivelix" | "ecorisk"
   input: json("input").notNull(),
   output: json("output").notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
+  deletedAt: timestamp("deleted_at"),
 });
 
 export type Calculation = typeof calculations.$inferSelect;
