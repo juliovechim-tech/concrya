@@ -366,6 +366,12 @@ export default function EcoriskCore() {
                           </div>
                           <Progress value={result.aion.confianca * 100} className="h-1.5" />
                         </div>
+                        {result.aion.intervalo && (
+                          <div className="flex justify-between text-xs">
+                            <span className="text-muted-foreground">IC 90%</span>
+                            <span className="font-mono">{result.aion.intervalo[0]} – {result.aion.intervalo[1]} MPa</span>
+                          </div>
+                        )}
                       </div>
                     </CardContent>
                   </Card>

@@ -296,6 +296,12 @@ export default function CompensaCore() {
                         </div>
                         <Progress value={result.aion.confianca * 100} className="h-2" />
                       </div>
+                      {result.aion.intervalo && (
+                        <div className="flex justify-between text-sm">
+                          <span className="text-muted-foreground">IC 90%</span>
+                          <span className="font-mono">{result.aion.intervalo[0]} – {result.aion.intervalo[1]} MPa</span>
+                        </div>
+                      )}
                       <div className="text-xs text-muted-foreground">
                         Modelo: {result.aion.modelo}
                       </div>
