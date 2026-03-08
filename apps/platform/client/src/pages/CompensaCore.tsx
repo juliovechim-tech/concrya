@@ -5,7 +5,8 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { AlertCircle, Loader2, Shield } from "lucide-react";
+import { Progress } from "@/components/ui/progress";
+import { AlertCircle, Loader2, Shield, Brain, AlertTriangle } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
 import { usePlano } from "@/hooks/usePlano";
@@ -263,6 +264,45 @@ export default function CompensaCore() {
                   </div>
                 </CardContent>
               </Card>
+
+              {result.aion && (
+                <Card>
+                  <CardHeader>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <Brain className="w-5 h-5 text-primary" />
+                        <CardTitle>AION · Predicao de Resistencia</CardTitle>
+                      </div>
+                      {result.aion.drift && (
+                        <Badge className="bg-orange-500/20 text-orange-400 border-orange-500/50">
+                          <AlertTriangle className="w-3 h-3 mr-1" />
+                          DRIFT
+                        </Badge>
+                      )}
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      <div className="flex justify-between items-center">
+                        <span className="text-muted-foreground">fc predito (28d)</span>
+                        <span className={`font-mono font-bold text-lg ${result.aion.fcPredito >= result.mix.fck ? "text-green-400" : "text-red-400"}`}>
+                          {result.aion.fcPredito} MPa
+                        </span>
+                      </div>
+                      <div className="space-y-1">
+                        <div className="flex justify-between text-sm">
+                          <span className="text-muted-foreground">Confianca</span>
+                          <span className="font-mono">{Math.round(result.aion.confianca * 100)}%</span>
+                        </div>
+                        <Progress value={result.aion.confianca * 100} className="h-2" />
+                      </div>
+                      <div className="text-xs text-muted-foreground">
+                        Modelo: {result.aion.modelo}
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
 
               <Card>
                 <CardHeader>
