@@ -5,7 +5,7 @@ import { publicProcedure, protectedProcedure, adminProcedure, router, requirePla
 import { z } from "zod";
 import { getDb } from "./db";
 import { materiais, tracos, ensaios, curvasAbrams, historicoCustos, licencas, historicoLicencas, users, assinaturasHotmart, planos, leads, calculations } from "../drizzle/schema";
-import { and, count } from "drizzle-orm";
+import { and, count, isNull, lt } from "drizzle-orm";
 import { eq, desc } from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
 import { runPipeline } from "@concrya/engine/pipeline";
@@ -883,6 +883,87 @@ export const appRouter = router({
         }
 
         return packet;
+      }),
+  }),
+
+  // Histórico de cálculos
+  history: router({
+    list: protectedProcedure
+      .input(z.object({
+        feature: z.enum(["compensa", "nivelix", "ecorisk"]).optional(),
+        limit: z.number().min(1).max(50).default(20),
+        cursor: z.number().optional(),
+      }))
+      .query(async ({ ctx, input }) => {
+        const db = await getDb();
+        if (!db) return { items: [], nextCursor: undefined };
+
+        const conditions = [
+          eq(calculations.userId, ctx.user.id),
+          isNull(calculations.deletedAt),
+        ];
+
+        if (input.feature) {
+          conditions.push(eq(calculations.feature, input.feature));
+        }
+
+        if (input.cursor) {
+          conditions.push(lt(calculations.id, input.cursor));
+        }
+
+        const items = await db.select().from(calculations)
+          .where(and(...conditions))
+          .orderBy(desc(calculations.id))
+          .limit(input.limit + 1);
+
+        let nextCursor: number | undefined;
+        if (items.length > input.limit) {
+          const extra = items.pop();
+          nextCursor = extra?.id;
+        }
+
+        return { items, nextCursor };
+      }),
+
+    getById: protectedProcedure
+      .input(z.object({ id: z.number() }))
+      .query(async ({ ctx, input }) => {
+        const db = await getDb();
+        if (!db) return null;
+
+        const result = await db.select().from(calculations)
+          .where(and(
+            eq(calculations.id, input.id),
+            eq(calculations.userId, ctx.user.id),
+            isNull(calculations.deletedAt),
+          ))
+          .limit(1);
+
+        return result[0] ?? null;
+      }),
+
+    delete: protectedProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ ctx, input }) => {
+        const db = await getDb();
+        if (!db) throw new Error("Database not available");
+
+        const result = await db.update(calculations)
+          .set({ deletedAt: new Date() })
+          .where(and(
+            eq(calculations.id, input.id),
+            eq(calculations.userId, ctx.user.id),
+            isNull(calculations.deletedAt),
+          ));
+
+        if (result[0].affectedRows === 0) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Calculo nao encontrado ou sem permissao",
+          });
+        }
+
+        return { success: true };
       }),
   }),
 });
