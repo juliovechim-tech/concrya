@@ -8,7 +8,7 @@ import { materiais, tracos, ensaios, curvasAbrams, historicoCustos, licencas, hi
 import { and, count, isNull, lt } from "drizzle-orm";
 import { eq, desc } from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
-import { runPipeline } from "@concrya/engine/pipeline";
+import { runPipeline, runVerticalPipeline } from "@concrya/engine/pipeline";
 import type { MixInput } from "@concrya/schemas";
 
 // Limites de traços por nível de plano
@@ -68,6 +68,90 @@ const mixInputSchema = z.object({
   consumoBrita: z.number().min(0).max(1500),
   adicoes: z.record(z.string(), z.number()).optional(),
   project: z.string().optional(),
+});
+
+// Schema Zod para CompensaInput tipado (concreto com AE)
+const compensaInputSchema = z.object({
+  cimentoType: z.string().min(1),
+  fck: z.number().min(1).max(200),
+  ac: z.number().min(0.20).max(0.90),
+  slump: z.number().min(0).max(800),
+  consumoCimento: z.number().min(50).max(1200),
+  consumoAgua: z.number().min(50).max(500),
+  consumoAreia: z.number().min(0).max(1500),
+  consumoBrita: z.number().min(0).max(1500),
+  agenteExpansivo: z.enum(["CSA-K", "CSA-G", "ETTRINGITA", "NENHUM"]),
+  teorAgente: z.number().min(0).max(200),
+  adicoes: z.object({
+    silicaAtiva: z.number().min(0).optional(),
+    metacaulim: z.number().min(0).optional(),
+  }).optional(),
+});
+
+// Schema Zod para NivelixInput tipado (argamassa — sem brita)
+const nivelixInputSchema = z.object({
+  cimentoType: z.string().min(1),
+  fck: z.number().min(1).max(200),
+  ac: z.number().min(0.20).max(0.90),
+  consumoCimento: z.number().min(50).max(1200),
+  consumoAgua: z.number().min(50).max(500),
+  consumoAreiaFina: z.number().min(0).max(1500),
+  consumoAreiaMedia: z.number().min(0).max(1500).optional(),
+  consumoFiller: z.number().min(0).max(500).optional(),
+  agenteExpansivo: z.enum(["CSA-K", "CSA-G", "ETTRINGITA", "NENHUM"]),
+  teorAgente: z.number().min(0).max(200),
+  adicaoMineral: z.enum(["SILICA_ATIVA", "METACAULIM", "NENHUMA"]).optional(),
+  teorAdicaoMineral: z.number().min(0).max(200).optional(),
+  temFibra: z.boolean(),
+  tipoFibra: z.enum(["PP", "PVA"]).optional(),
+  teorFibra: z.number().min(0).max(50).optional(),
+  superplastificante: z.number().min(0).max(5).optional(),
+  incorporadorAr: z.number().min(0).max(2).optional(),
+  espalhamentoAlvo: z.number().min(50).max(400),
+});
+
+// Schema Zod para EcoriskInput tipado
+const ecoriskInputSchema = z.object({
+  tipoMaterial: z.enum(["CONCRETO", "ARGAMASSA"]),
+  cimentoType: z.string().min(1),
+  fck: z.number().min(1).max(200),
+  ac: z.number().min(0.20).max(0.90),
+  slump: z.number().min(0).max(800).optional(),
+  espalhamento: z.number().min(0).max(800).optional(),
+  consumoCimento: z.number().min(50).max(1200),
+  consumoAgua: z.number().min(50).max(500),
+  consumoAreia: z.number().min(0).max(1500),
+  consumoBrita: z.number().min(0).max(1500),
+  agenteExpansivo: z.enum(["CSA-K", "CSA-G", "ETTRINGITA", "NENHUM"]).optional(),
+  teorAgente: z.number().min(0).max(200).optional(),
+  adicoes: z.record(z.string(), z.number()).optional(),
+});
+
+// Schema Zod para DensusInput tipado
+const densusInputSchema = z.object({
+  cimentoType: z.string().min(1),
+  fck: z.number().min(1).max(200),
+  ac: z.number().min(0.20).max(0.90),
+  slump: z.number().min(0).max(800),
+  consumoCimento: z.number().min(50).max(1200),
+  consumoAgua: z.number().min(50).max(500),
+  consumoAreia: z.number().min(0).max(1500),
+  consumoBrita: z.number().min(0).max(1500),
+  adicoes: z.object({
+    silicaAtiva: z.number().min(0).optional(),
+    metacaulim: z.number().min(0).optional(),
+    escoria: z.number().min(0).optional(),
+    cinzaVolante: z.number().min(0).optional(),
+  }).optional(),
+  metodoGranulometria: z.enum(["Fuller", "Faury", "Bolomey", "Andreasen"]),
+  dmax: z.number().min(1).max(150),
+  dmin: z.number().min(0.001).max(10).optional(),
+  q: z.number().min(0.1).max(0.9).optional(),
+  precos: z.object({
+    cimento: z.number().min(0).optional(),
+    areia: z.number().min(0).optional(),
+    brita: z.number().min(0).optional(),
+  }).optional(),
 });
 
 export const appRouter = router({
@@ -817,14 +901,13 @@ export const appRouter = router({
     }),
   }),
 
-  // COMPENSA CORE Router
+  // COMPENSA CORE Router — input tipado (concreto com AE)
   compensa: router({
     calculate: avancadoProcedure
-      .input(mixInputSchema)
+      .input(compensaInputSchema)
       .mutation(async ({ ctx, input }) => {
-        const packet = runPipeline(input);
+        const packet = runVerticalPipeline({ vertical: "compensa", data: input });
 
-        // Logar no DB
         const db = await getDb();
         if (db) {
           await db.insert(calculations).values({
@@ -839,17 +922,13 @@ export const appRouter = router({
       }),
   }),
 
-  // NIVELIX Router
+  // NIVELIX Router — input tipado para argamassa (sem brita)
   nivelix: router({
     calculate: avancadoProcedure
-      .input(mixInputSchema.extend({
-        temFibra: z.boolean().default(false),
-      }))
+      .input(nivelixInputSchema)
       .mutation(async ({ ctx, input }) => {
-        const { temFibra: _temFibra, ...mixData } = input;
-        const packet = runPipeline(mixData);
+        const packet = runVerticalPipeline({ vertical: "nivelix", data: input });
 
-        // Logar no DB
         const db = await getDb();
         if (db) {
           await db.insert(calculations).values({
@@ -864,14 +943,13 @@ export const appRouter = router({
       }),
   }),
 
-  // ECORISK Router
+  // ECORISK Router — input tipado (concreto ou argamassa)
   ecorisk: router({
     analyze: avancadoProcedure
-      .input(mixInputSchema)
+      .input(ecoriskInputSchema)
       .mutation(async ({ ctx, input }) => {
-        const packet = runPipeline(input);
+        const packet = runVerticalPipeline({ vertical: "ecorisk", data: input });
 
-        // Logar no DB
         const db = await getDb();
         if (db) {
           await db.insert(calculations).values({
@@ -886,20 +964,12 @@ export const appRouter = router({
       }),
   }),
 
-  // DENSUS ENGINE Router
+  // DENSUS ENGINE Router — input tipado (dosagem + granulometria)
   dosagem: router({
     calcular: avancadoProcedure
-      .input(mixInputSchema.extend({
-        metodoGranulometria: z.enum(["Fuller", "Faury", "Bolomey", "Andreasen"]).default("Fuller"),
-        dmax: z.number().min(1).max(150).default(25),
-        dmin: z.number().min(0.001).max(10).optional(),
-        q: z.number().min(0.1).max(0.9).optional(),
-        precos: z.record(z.string(), z.number()).optional(),
-      }))
+      .input(densusInputSchema)
       .mutation(async ({ ctx, input }) => {
-        const { metodoGranulometria, dmax, dmin, q, precos, ...mixData } = input;
-        const opcoesDensus = { metodoGranulometria, dmax, dmin, q, precos };
-        const packet = runPipeline(mixData, opcoesDensus);
+        const packet = runVerticalPipeline({ vertical: "densus", data: input });
 
         const db = await getDb();
         if (db) {

@@ -24,10 +24,10 @@ const CIMENTO_TYPES = [
 ] as const;
 
 const AE_TYPES = [
-  { label: "CSA-K (Sulfoaluminato)", value: "csa" },
-  { label: "CaO (Cal livre)", value: "cao" },
-  { label: "MgO (Periclasio)", value: "mgo" },
-  { label: "Nenhum", value: "nenhum" },
+  { label: "CSA-K (Sulfoaluminato)", value: "CSA-K" },
+  { label: "CSA-G (Gesso expansivo)", value: "CSA-G" },
+  { label: "Ettringita", value: "ETTRINGITA" },
+  { label: "Nenhum", value: "NENHUM" },
 ] as const;
 
 export default function CompensaCore() {
@@ -42,7 +42,7 @@ export default function CompensaCore() {
   const [consumoAgua, setConsumoAgua] = useState("160");
   const [consumoAreia, setConsumoAreia] = useState("750");
   const [consumoBrita, setConsumoBrita] = useState("950");
-  const [aeType, setAeType] = useState("csa");
+  const [aeType, setAeType] = useState("CSA-K");
   const [teorAgente, setTeorAgente] = useState("32");
 
   const [result, setResult] = useState<ConcretePacket | null>(null);
@@ -75,13 +75,6 @@ export default function CompensaCore() {
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
 
-    const adicoes: Record<string, number> = {};
-    const teorNum = parseFloat(teorAgente);
-    if (aeType !== "nenhum" && teorNum > 0) {
-      adicoes[aeType] = teorNum;
-      adicoes["agente_expansivo"] = teorNum;
-    }
-
     calculateMutation.mutate({
       cimentoType,
       fck: parseFloat(fck),
@@ -91,7 +84,8 @@ export default function CompensaCore() {
       consumoAgua: parseFloat(consumoAgua),
       consumoAreia: parseFloat(consumoAreia),
       consumoBrita: parseFloat(consumoBrita),
-      adicoes,
+      agenteExpansivo: aeType as "CSA-K" | "CSA-G" | "ETTRINGITA" | "NENHUM",
+      teorAgente: parseFloat(teorAgente),
     });
   }
 
@@ -196,7 +190,7 @@ export default function CompensaCore() {
                       onChange={(e) => setTeorAgente(e.target.value)}
                       step="1"
                       min="0"
-                      disabled={aeType === "nenhum"}
+                      disabled={aeType === "NENHUM"}
                     />
                   </div>
                 </div>

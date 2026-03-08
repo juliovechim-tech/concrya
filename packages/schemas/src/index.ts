@@ -144,6 +144,13 @@ export type { NivelixInput } from "./nivelix-input"
 export type { EcoriskInput } from "./ecorisk-input"
 export type { DensusInput } from "./densus-input"
 
+// ── Inputs tipados por vertical ──────────────────────────────
+
+export type { CompensaInput } from "./compensa-input"
+export type { NivelixInput } from "./nivelix-input"
+export type { EcoriskInput } from "./ecorisk-input"
+export type { DensusInput } from "./densus-input"
+
 // ── Schema de traço (input para cálculo) ────────────────────────
 
 export const tracoInputSchema = z.object({

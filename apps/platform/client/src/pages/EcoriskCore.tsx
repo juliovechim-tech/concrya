@@ -25,10 +25,10 @@ const CIMENTO_TYPES = [
 ] as const;
 
 const AE_TYPES = [
-  { label: "CSA-K (Sulfoaluminato)", value: "csa" },
-  { label: "CaO (Cal livre)", value: "cao" },
-  { label: "MgO (Periclasio)", value: "mgo" },
-  { label: "Nenhum", value: "nenhum" },
+  { label: "CSA-K (Sulfoaluminato)", value: "CSA-K" },
+  { label: "CSA-G (Gesso expansivo)", value: "CSA-G" },
+  { label: "Ettringita", value: "ETTRINGITA" },
+  { label: "Nenhum", value: "NENHUM" },
 ] as const;
 
 function ScoreGauge({ score, nivel }: { score: number; nivel: string }) {
@@ -86,7 +86,7 @@ export default function EcoriskCore() {
   const [consumoAgua, setConsumoAgua] = useState("160");
   const [consumoAreia, setConsumoAreia] = useState("750");
   const [consumoBrita, setConsumoBrita] = useState("950");
-  const [aeType, setAeType] = useState("nenhum");
+  const [aeType, setAeType] = useState("NENHUM");
   const [teorAgente, setTeorAgente] = useState("0");
   const [temFibra, setTemFibra] = useState(false);
 
@@ -121,16 +121,12 @@ export default function EcoriskCore() {
     e.preventDefault();
 
     const adicoes: Record<string, number> = {};
-    const teorNum = parseFloat(teorAgente);
-    if (aeType !== "nenhum" && teorNum > 0) {
-      adicoes[aeType] = teorNum;
-      adicoes["agente_expansivo"] = teorNum;
-    }
     if (temFibra) {
       adicoes["fibra"] = 1;
     }
 
     analyzeMutation.mutate({
+      tipoMaterial: "CONCRETO" as const,
       cimentoType,
       fck: parseFloat(fck),
       ac: parseFloat(ac),
@@ -139,7 +135,9 @@ export default function EcoriskCore() {
       consumoAgua: parseFloat(consumoAgua),
       consumoAreia: parseFloat(consumoAreia),
       consumoBrita: parseFloat(consumoBrita),
-      adicoes,
+      agenteExpansivo: aeType as "CSA-K" | "CSA-G" | "ETTRINGITA" | "NENHUM",
+      teorAgente: parseFloat(teorAgente),
+      adicoes: Object.keys(adicoes).length > 0 ? adicoes : undefined,
     });
   }
 
@@ -244,7 +242,7 @@ export default function EcoriskCore() {
                       onChange={(e) => setTeorAgente(e.target.value)}
                       step="1"
                       min="0"
-                      disabled={aeType === "nenhum"}
+                      disabled={aeType === "NENHUM"}
                     />
                   </div>
                 </div>

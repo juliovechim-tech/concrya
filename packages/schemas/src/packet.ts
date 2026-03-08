@@ -37,6 +37,12 @@ export interface ConcretePacket {
     adicoes?: Record<string, number>  // tipo → kg/m3
   }
 
+  /** Input tipado da vertical (opcional — usado por apply* em dual-mode) */
+  compensaInput?: CompensaInput
+  nivelixInput?: NivelixInput
+  ecoriskInput?: EcoriskInput
+  densusInput?: DensusInput
+
   /** Dados de retracao compensada (preenchido por @concrya/compensa) */
   compensa?: {
     expansaoEsperada: number    // µε
@@ -72,12 +78,6 @@ export interface ConcretePacket {
     modelo: string
     intervalo?: [number, number] // IC 90% [min, max]
   }
-
-  /** Input tipado da vertical (opcional — usado por apply* em dual-mode) */
-  compensaInput?: CompensaInput
-  nivelixInput?: NivelixInput
-  ecoriskInput?: EcoriskInput
-  densusInput?: DensusInput
 
   /** Dados do Densus Engine (preenchido por applyDensus) */
   densus?: {
