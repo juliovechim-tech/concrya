@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Progress } from "@/components/ui/progress";
-import { AlertCircle, Loader2, Shield, Brain, AlertTriangle, Cog } from "lucide-react";
+import { AlertCircle, Loader2, Shield, Brain, AlertTriangle, Cog, Leaf } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
 import { usePlano } from "@/hooks/usePlano";
@@ -357,6 +357,94 @@ export default function DensusEngine() {
                   </div>
                 </CardContent>
               </Card>
+
+              {/* ECORISK */}
+              {result.ecorisk && (
+                <Card>
+                  <CardHeader className="pb-2">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <Leaf className="w-5 h-5 text-primary" />
+                        <CardTitle>ECORISK — Score Dw</CardTitle>
+                      </div>
+                      <Badge className={
+                        result.ecorisk.nivel === "BAIXO" ? "bg-green-500/20 text-green-400 border-green-500/50" :
+                        result.ecorisk.nivel === "MEDIO" ? "bg-yellow-500/20 text-yellow-400 border-yellow-500/50" :
+                        result.ecorisk.nivel === "ALTO" ? "bg-orange-500/20 text-orange-400 border-orange-500/50" :
+                        "bg-red-500/20 text-red-400 border-red-500/50"
+                      }>
+                        {result.ecorisk.nivel}
+                      </Badge>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="flex items-center justify-between mb-3">
+                      <span className="text-muted-foreground">Score</span>
+                      <span className="text-3xl font-bold font-mono text-primary">{result.ecorisk.score}<span className="text-sm text-muted-foreground">/100</span></span>
+                    </div>
+                    <Progress value={result.ecorisk.score} className="h-2 mb-3" />
+                    {result.ecorisk.fatores.length > 0 && (
+                      <div className="space-y-1 mb-2">
+                        {result.ecorisk.fatores.map((f, i) => (
+                          <div key={i} className="flex items-start gap-2 text-xs">
+                            <AlertTriangle className="w-3 h-3 mt-0.5 text-orange-400 shrink-0" />
+                            <span>{f}</span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                    {result.ecorisk.recomendacoes.length > 0 && (
+                      <div className="space-y-1">
+                        {result.ecorisk.recomendacoes.map((r, i) => (
+                          <div key={i} className="flex items-start gap-2 text-xs">
+                            <Shield className="w-3 h-3 mt-0.5 text-blue-400 shrink-0" />
+                            <span>{r}</span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              )}
+
+              {/* COMPENSA resumido */}
+              {result.compensa && (
+                <Card>
+                  <CardHeader className="pb-2">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <Shield className="w-5 h-5 text-primary" />
+                        <CardTitle>COMPENSA — CRC</CardTitle>
+                      </div>
+                      <Badge className={
+                        result.compensa.status === "OK" ? "bg-green-500/20 text-green-400 border-green-500/50" :
+                        result.compensa.status === "RISCO" ? "bg-yellow-500/20 text-yellow-400 border-yellow-500/50" :
+                        "bg-red-500/20 text-red-400 border-red-500/50"
+                      }>
+                        {result.compensa.status}
+                      </Badge>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-2">
+                      <div className="flex justify-between text-sm">
+                        <span className="text-muted-foreground">Expansao</span>
+                        <span className="font-mono">{result.compensa.expansaoEsperada} ue</span>
+                      </div>
+                      <div className="flex justify-between text-sm">
+                        <span className="text-muted-foreground">Retracao</span>
+                        <span className="font-mono">{result.compensa.retracaoEstimada} ue</span>
+                      </div>
+                      <div className="flex justify-between text-sm border-t border-border pt-2">
+                        <span className="text-muted-foreground font-semibold">Balanco CRC</span>
+                        <span className={`font-mono font-bold ${result.compensa.balancoCRC > 0 ? "text-green-400" : "text-red-400"}`}>
+                          {result.compensa.balancoCRC > 0 ? "+" : ""}{result.compensa.balancoCRC} ue
+                        </span>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
 
               {/* Linha inferior: CPM + CUSTO + AION */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">

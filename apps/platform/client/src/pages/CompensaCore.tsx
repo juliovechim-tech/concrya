@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Progress } from "@/components/ui/progress";
-import { AlertCircle, Loader2, Shield, Brain, AlertTriangle } from "lucide-react";
+import { AlertCircle, Loader2, Shield, Brain, AlertTriangle, Leaf } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
 import { usePlano } from "@/hooks/usePlano";
@@ -299,6 +299,59 @@ export default function CompensaCore() {
                       <div className="text-xs text-muted-foreground">
                         Modelo: {result.aion.modelo}
                       </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+
+              {/* ECORISK */}
+              {result.ecorisk && (
+                <Card>
+                  <CardHeader>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <Leaf className="w-5 h-5 text-primary" />
+                        <CardTitle>ECORISK — Score Dw</CardTitle>
+                      </div>
+                      <Badge className={
+                        result.ecorisk.nivel === "BAIXO" ? "bg-green-500/20 text-green-400 border-green-500/50" :
+                        result.ecorisk.nivel === "MEDIO" ? "bg-yellow-500/20 text-yellow-400 border-yellow-500/50" :
+                        result.ecorisk.nivel === "ALTO" ? "bg-orange-500/20 text-orange-400 border-orange-500/50" :
+                        "bg-red-500/20 text-red-400 border-red-500/50"
+                      }>
+                        {result.ecorisk.nivel}
+                      </Badge>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between">
+                        <span className="text-muted-foreground">Score</span>
+                        <span className="text-3xl font-bold font-mono text-primary">{result.ecorisk.score}<span className="text-sm text-muted-foreground">/100</span></span>
+                      </div>
+                      <Progress value={result.ecorisk.score} className="h-2" />
+                      {result.ecorisk.fatores.length > 0 && (
+                        <div>
+                          <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1">Fatores de Risco</h4>
+                          {result.ecorisk.fatores.map((f, i) => (
+                            <div key={i} className="flex items-start gap-2 text-sm">
+                              <AlertTriangle className="w-3 h-3 mt-1 text-orange-400 shrink-0" />
+                              <span>{f}</span>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                      {result.ecorisk.recomendacoes.length > 0 && (
+                        <div>
+                          <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1">Recomendacoes</h4>
+                          {result.ecorisk.recomendacoes.map((r, i) => (
+                            <div key={i} className="flex items-start gap-2 text-sm">
+                              <Shield className="w-3 h-3 mt-1 text-blue-400 shrink-0" />
+                              <span>{r}</span>
+                            </div>
+                          ))}
+                        </div>
+                      )}
                     </div>
                   </CardContent>
                 </Card>
