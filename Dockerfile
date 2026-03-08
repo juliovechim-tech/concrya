@@ -55,8 +55,5 @@ RUN pnpm install --frozen-lockfile --prod
 COPY --from=builder /app/apps/platform/dist apps/platform/dist
 
 ENV NODE_ENV=production
-ENV PORT=3004
-
-EXPOSE 3004
 
 CMD ["node", "apps/platform/dist/index.js"]
