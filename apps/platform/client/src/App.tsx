@@ -35,6 +35,7 @@ const DashboardCustos = lazy(() => import("./pages/DashboardCustos"));
 const CompensaCore = lazy(() => import("./pages/CompensaCore"));
 const NivelixCore = lazy(() => import("./pages/NivelixCore"));
 const EcoriskCore = lazy(() => import("./pages/EcoriskCore"));
+const Historico = lazy(() => import("./pages/Historico"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 function PageLoader() {
@@ -85,6 +86,7 @@ function Router() {
           <Route path={"/compensa"} component={CompensaCore} />
           <Route path={"/nivelix"} component={NivelixCore} />
           <Route path={"/ecorisk"} component={EcoriskCore} />
+          <Route path={"/historico"} component={Historico} />
           <Route path={"/404"} component={NotFound} />
           {/* Final fallback route */}
           <Route component={NotFound} />

@@ -29,6 +29,7 @@ import {
   Layers,
   Wrench,
   Leaf,
+  History,
 } from "lucide-react";
 import { useState } from "react";
 
@@ -45,6 +46,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     { label: "Kits & Insumos", path: "https://mestresconcreto.com/kits", icon: ShoppingBag, external: true },
     { label: "Consultoria", path: "/consultoria", icon: MessageCircle },
     { label: "Planos", path: "/pricing", icon: CreditCard },
+    { label: "Historico", path: "/historico", icon: History },
   ];
 
   const labItems = [
