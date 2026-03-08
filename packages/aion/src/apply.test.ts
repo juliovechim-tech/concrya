@@ -45,9 +45,9 @@ describe("applyAion — modelo Abrams + correcoes", () => {
     const packet = makePacket({ ac: 0.40, fck: 40, cimentoType: "CP V ARI" })
     const result = applyAion(packet)
 
-    it("fcPredito entre 35 e 55 MPa", () => {
+    it("fcPredito entre 35 e 60 MPa", () => {
       expect(result.aion!.fcPredito).toBeGreaterThanOrEqual(35)
-      expect(result.aion!.fcPredito).toBeLessThanOrEqual(55)
+      expect(result.aion!.fcPredito).toBeLessThanOrEqual(60)
     })
 
     it("confianca >= 0.70", () => {
@@ -58,8 +58,8 @@ describe("applyAion — modelo Abrams + correcoes", () => {
       expect(result.aion!.drift).toBe(false)
     })
 
-    it("modelo === abrams-v1", () => {
-      expect(result.aion!.modelo).toBe("abrams-v1")
+    it("modelo === predict-v1", () => {
+      expect(result.aion!.modelo).toBe("predict-v1")
     })
   })
 
@@ -104,8 +104,8 @@ describe("applyAion — modelo Abrams + correcoes", () => {
     })
     const result = applyAion(packet)
 
-    it("confianca < 0.75", () => {
-      expect(result.aion!.confianca).toBeLessThan(0.75)
+    it("confianca < 0.80", () => {
+      expect(result.aion!.confianca).toBeLessThan(0.80)
     })
   })
 

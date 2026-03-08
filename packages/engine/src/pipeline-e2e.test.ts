@@ -129,8 +129,8 @@ describe("Pipeline E2E — Traco NIVELIX OS (Chimica Edile)", () => {
     expect(packet.aion!.confianca).toBeLessThanOrEqual(0.98)
   })
 
-  it("aion: modelo === abrams-v1", () => {
-    expect(packet.aion!.modelo).toBe("abrams-v1")
+  it("aion: modelo === predict-v1", () => {
+    expect(packet.aion!.modelo).toBe("predict-v1")
   })
 
   // ── Imutabilidade (funcao pura) ─────────────────────────────

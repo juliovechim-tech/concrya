@@ -65,6 +65,7 @@ export interface ConcretePacket {
     confianca: number           // 0..1
     drift: boolean
     modelo: string
+    intervalo?: [number, number] // IC 90% [min, max]
   }
 
   /** Dados do Densus Engine (preenchido por applyDensus) */

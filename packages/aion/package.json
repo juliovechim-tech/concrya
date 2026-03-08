@@ -13,7 +13,8 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@concrya/schemas": "workspace:*"
+    "@concrya/schemas": "workspace:*",
+    "@concrya/predict": "workspace:*"
   },
   "devDependencies": {
     "typescript": "^5.5.3",

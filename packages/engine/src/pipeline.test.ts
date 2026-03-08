@@ -75,7 +75,7 @@ describe("runPipeline", () => {
     expect(packet.aion!.fcPredito).toBeGreaterThan(0)
     expect(packet.aion!.confianca).toBeGreaterThanOrEqual(0.40)
     expect(packet.aion!.confianca).toBeLessThanOrEqual(0.98)
-    expect(packet.aion!.modelo).toBe("abrams-v1")
+    expect(packet.aion!.modelo).toBe("predict-v1")
   })
 })
 
