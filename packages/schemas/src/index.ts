@@ -139,16 +139,19 @@ export const familiaTracoSchema = z.object({
 // ── ConcretePacket v1 (integracao entre pacotes) ──────────────
 
 export type { ConcretePacket, MixInput } from "./packet"
-export type { CompensaInput } from "./compensa-input"
-export type { NivelixInput } from "./nivelix-input"
-export type { EcoriskInput } from "./ecorisk-input"
-export type { DensusInput } from "./densus-input"
 
-// ── Inputs tipados por vertical ──────────────────────────────
+// ── Inputs tipados por vertical (Zod schemas + types) ────────
 
+export { compensaInputSchema } from "./compensa-input"
 export type { CompensaInput } from "./compensa-input"
+
+export { nivelixInputSchema } from "./nivelix-input"
 export type { NivelixInput } from "./nivelix-input"
+
+export { ecoriskInputSchema } from "./ecorisk-input"
 export type { EcoriskInput } from "./ecorisk-input"
+
+export { densusInputSchema } from "./densus-input"
 export type { DensusInput } from "./densus-input"
 
 // ── Schema de traço (input para cálculo) ────────────────────────

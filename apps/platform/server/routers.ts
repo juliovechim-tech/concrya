@@ -10,6 +10,7 @@ import { eq, desc } from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
 import { runPipeline, runVerticalPipeline } from "@concrya/engine/pipeline";
 import type { MixInput } from "@concrya/schemas";
+import { compensaInputSchema, nivelixInputSchema, ecoriskInputSchema, densusInputSchema } from "@concrya/schemas";
 
 // Limites de traços por nível de plano
 const LIMITE_TRACOS: Record<string, number> = {
@@ -70,89 +71,7 @@ const mixInputSchema = z.object({
   project: z.string().optional(),
 });
 
-// Schema Zod para CompensaInput tipado (concreto com AE)
-const compensaInputSchema = z.object({
-  cimentoType: z.string().min(1),
-  fck: z.number().min(1).max(200),
-  ac: z.number().min(0.20).max(0.90),
-  slump: z.number().min(0).max(800),
-  consumoCimento: z.number().min(50).max(1200),
-  consumoAgua: z.number().min(50).max(500),
-  consumoAreia: z.number().min(0).max(1500),
-  consumoBrita: z.number().min(0).max(1500),
-  agenteExpansivo: z.enum(["CSA-K", "CSA-G", "ETTRINGITA", "NENHUM"]),
-  teorAgente: z.number().min(0).max(200),
-  adicoes: z.object({
-    silicaAtiva: z.number().min(0).optional(),
-    metacaulim: z.number().min(0).optional(),
-  }).optional(),
-});
-
-// Schema Zod para NivelixInput tipado (argamassa — sem brita)
-const nivelixInputSchema = z.object({
-  cimentoType: z.string().min(1),
-  fck: z.number().min(1).max(200),
-  ac: z.number().min(0.20).max(0.90),
-  consumoCimento: z.number().min(50).max(1200),
-  consumoAgua: z.number().min(50).max(500),
-  consumoAreiaFina: z.number().min(0).max(1500),
-  consumoAreiaMedia: z.number().min(0).max(1500).optional(),
-  consumoFiller: z.number().min(0).max(500).optional(),
-  agenteExpansivo: z.enum(["CSA-K", "CSA-G", "ETTRINGITA", "NENHUM"]),
-  teorAgente: z.number().min(0).max(200),
-  adicaoMineral: z.enum(["SILICA_ATIVA", "METACAULIM", "NENHUMA"]).optional(),
-  teorAdicaoMineral: z.number().min(0).max(200).optional(),
-  temFibra: z.boolean(),
-  tipoFibra: z.enum(["PP", "PVA"]).optional(),
-  teorFibra: z.number().min(0).max(50).optional(),
-  superplastificante: z.number().min(0).max(5).optional(),
-  incorporadorAr: z.number().min(0).max(2).optional(),
-  espalhamentoAlvo: z.number().min(50).max(400),
-});
-
-// Schema Zod para EcoriskInput tipado
-const ecoriskInputSchema = z.object({
-  tipoMaterial: z.enum(["CONCRETO", "ARGAMASSA"]),
-  cimentoType: z.string().min(1),
-  fck: z.number().min(1).max(200),
-  ac: z.number().min(0.20).max(0.90),
-  slump: z.number().min(0).max(800).optional(),
-  espalhamento: z.number().min(0).max(800).optional(),
-  consumoCimento: z.number().min(50).max(1200),
-  consumoAgua: z.number().min(50).max(500),
-  consumoAreia: z.number().min(0).max(1500),
-  consumoBrita: z.number().min(0).max(1500),
-  agenteExpansivo: z.enum(["CSA-K", "CSA-G", "ETTRINGITA", "NENHUM"]).optional(),
-  teorAgente: z.number().min(0).max(200).optional(),
-  adicoes: z.record(z.string(), z.number()).optional(),
-});
-
-// Schema Zod para DensusInput tipado
-const densusInputSchema = z.object({
-  cimentoType: z.string().min(1),
-  fck: z.number().min(1).max(200),
-  ac: z.number().min(0.20).max(0.90),
-  slump: z.number().min(0).max(800),
-  consumoCimento: z.number().min(50).max(1200),
-  consumoAgua: z.number().min(50).max(500),
-  consumoAreia: z.number().min(0).max(1500),
-  consumoBrita: z.number().min(0).max(1500),
-  adicoes: z.object({
-    silicaAtiva: z.number().min(0).optional(),
-    metacaulim: z.number().min(0).optional(),
-    escoria: z.number().min(0).optional(),
-    cinzaVolante: z.number().min(0).optional(),
-  }).optional(),
-  metodoGranulometria: z.enum(["Fuller", "Faury", "Bolomey", "Andreasen"]),
-  dmax: z.number().min(1).max(150),
-  dmin: z.number().min(0.001).max(10).optional(),
-  q: z.number().min(0.1).max(0.9).optional(),
-  precos: z.object({
-    cimento: z.number().min(0).optional(),
-    areia: z.number().min(0).optional(),
-    brita: z.number().min(0).optional(),
-  }).optional(),
-});
+// Schemas Zod tipados por vertical — importados de @concrya/schemas (SSoT)
 
 export const appRouter = router({
   system: systemRouter,

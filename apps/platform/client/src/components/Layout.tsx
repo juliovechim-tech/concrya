@@ -18,12 +18,9 @@ import {
   Instagram,
   Globe,
   FlaskConical,
-  Beaker,
-  Droplets,
   ClipboardList,
   ChevronDown,
   CreditCard,
-  Gift,
   BarChart3,
   Shield,
   Layers,
@@ -42,7 +39,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
   const navItems = [
     { label: "Site Principal", path: "https://concrya.com.br", icon: Globe, external: true },
-    { label: "Calculadora", path: "/", icon: Calculator },
+    { label: "Home", path: "/", icon: Calculator },
     { label: "Tutoriais", path: "/tutoriais", icon: BookOpen },
     { label: "Kits & Insumos", path: "https://concrya.com.br/kits", icon: ShoppingBag, external: true },
     { label: "Consultoria", path: "/consultoria", icon: MessageCircle },
@@ -51,8 +48,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   ];
 
   const labItems = [
-    { label: "Bateladas de Teste", path: "/laboratorio/bateladas", icon: Beaker },
-    { label: "Corte de Água", path: "/laboratorio/corte-agua", icon: Droplets },
     { label: "Cadastro de Ensaios", path: "/laboratorio/cadastro-ensaios", icon: ClipboardList },
     { label: "Dashboard de Custos", path: "/dashboard-custos", icon: BarChart3 },
   ];
@@ -76,7 +71,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           <Link href="/">
             <div className="flex items-center gap-2 cursor-pointer group">
               <div className="w-10 h-10 flex items-center justify-center rounded-full overflow-hidden">
-                <img src="/logo-mestres-circular.png" alt="CONCRYA Technologies" className="w-10 h-10 object-cover" />
+                <img src="/logo-concrya.png" alt="CONCRYA Technologies" className="w-10 h-10 object-cover" />
               </div>
               <div className="flex flex-col">
                 <span className="font-bold text-lg leading-none tracking-tighter uppercase">CONCRYA</span>
@@ -157,12 +152,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               </DropdownMenuContent>
             </DropdownMenu>
 
-            <Button variant="outline" className="border-green-500 text-green-500 hover:bg-green-500 hover:text-black font-bold uppercase tracking-wider rounded-none transition-all duration-300" asChild>
-              <Link href="/otimizacao-agregados">
-                <Gift className="w-4 h-4 mr-2" />
-                Ferramenta Grátis
-              </Link>
-            </Button>
             <Button variant="default" className="bg-primary hover:bg-white hover:text-black text-white font-bold uppercase tracking-wider rounded-none border border-primary transition-all duration-300 shadow-[4px_4px_0px_0px_rgba(255,255,255,0.2)] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]" asChild>
               <Link href="/pricing">Ver Planos</Link>
             </Button>
@@ -254,12 +243,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                   </div>
                 </div>
                 <div className="p-6 border-t border-border bg-muted/20">
-                  <Link href="/otimizacao-agregados" onClick={() => setIsOpen(false)}>
-                    <Button className="w-full bg-green-500 text-black font-bold uppercase rounded-none mb-3">
-                      <Gift className="w-4 h-4 mr-2" />
-                      Ferramenta Grátis
-                    </Button>
-                  </Link>
                   <Link href="/pricing" onClick={() => setIsOpen(false)}>
                     <Button className="w-full bg-primary text-white font-bold uppercase rounded-none mb-4">
                       Ver Planos
@@ -295,7 +278,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             <div className="col-span-1 md:col-span-2">
               <div className="flex items-center gap-2 mb-6">
                 <div className="w-10 h-10 flex items-center justify-center rounded-full overflow-hidden">
-                  <img src="/logo-mestres-circular.png" alt="CONCRYA Technologies" className="w-10 h-10 object-cover" />
+                  <img src="/logo-concrya.png" alt="CONCRYA Technologies" className="w-10 h-10 object-cover" />
                 </div>
                 <span className="font-bold text-xl uppercase tracking-tighter">CONCRYA Technologies</span>
               </div>
@@ -316,13 +299,12 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             </div>
             
             <div>
-              <h3 className="font-bold uppercase tracking-wider mb-6 text-primary">Ferramentas</h3>
+              <h3 className="font-bold uppercase tracking-wider mb-6 text-primary">Soluções</h3>
               <ul className="space-y-3 font-mono text-sm">
-                <li><Link href="/otimizacao-agregados"><span className="text-green-500 hover:text-green-400 cursor-pointer transition-colors font-bold">Ferramenta Grátis</span></Link></li>
-                <li><Link href="/"><span className="text-muted-foreground hover:text-white cursor-pointer transition-colors">Calculadora de Traço</span></Link></li>
-                <li><Link href="/abrams"><span className="text-muted-foreground hover:text-white cursor-pointer transition-colors">Curva de Abrams</span></Link></li>
-                <li><Link href="/laboratorio/bateladas"><span className="text-muted-foreground hover:text-white cursor-pointer transition-colors">Bateladas de Teste</span></Link></li>
-                <li><Link href="/laboratorio/corte-agua"><span className="text-muted-foreground hover:text-white cursor-pointer transition-colors">Corte de Água</span></Link></li>
+                <li><Link href="/dosagem"><span className="text-muted-foreground hover:text-white cursor-pointer transition-colors">Densus Engine</span></Link></li>
+                <li><Link href="/compensa"><span className="text-muted-foreground hover:text-white cursor-pointer transition-colors">COMPENSA CORE</span></Link></li>
+                <li><Link href="/nivelix"><span className="text-muted-foreground hover:text-white cursor-pointer transition-colors">NIVELIX</span></Link></li>
+                <li><Link href="/ecorisk"><span className="text-muted-foreground hover:text-white cursor-pointer transition-colors">ECORISK</span></Link></li>
               </ul>
             </div>
 
@@ -342,7 +324,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               © 2025 CONCRYA TECHNOLOGIES. TODOS OS DIREITOS RESERVADOS.
             </p>
             <p className="text-xs text-muted-foreground font-mono">
-              DESENVOLVIDO COM MANUS
+              ENGINEERING INTELLIGENCE FOR CONCRETE
             </p>
           </div>
         </div>

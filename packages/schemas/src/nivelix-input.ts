@@ -4,47 +4,27 @@
 // adição mineral, fibra, superplastificante, ar incorporado.
 // Ref: EN 13813 · NBR 15823 · Roussel (2005)
 
-export interface NivelixInput {
-  /** Tipo de cimento — CP V ARI | CP II-F | CP II-Z etc. */
-  cimentoType: string
-  /** Resistência alvo 28d — MPa */
-  fck: number
-  /** Relação água/cimento */
-  ac: number
-  /** Consumo de cimento — kg/m³ */
-  consumoCimento: number
-  /** Consumo de água — L/m³ */
-  consumoAgua: number
+import { z } from "zod"
 
-  /** Areia fina (d50 < 0.3mm) — kg/m³ */
-  consumoAreiaFina: number
-  /** Areia média (d50 0.3–0.6mm) — kg/m³ */
-  consumoAreiaMedia?: number
-  /** Fíler calcário — kg/m³ */
-  consumoFiller?: number
+export const nivelixInputSchema = z.object({
+  cimentoType: z.string().min(1),
+  fck: z.number().min(1).max(200),
+  ac: z.number().min(0.20).max(0.90),
+  consumoCimento: z.number().min(50).max(1200),
+  consumoAgua: z.number().min(50).max(500),
+  consumoAreiaFina: z.number().min(0).max(1500),
+  consumoAreiaMedia: z.number().min(0).max(1500).optional(),
+  consumoFiller: z.number().min(0).max(500).optional(),
+  agenteExpansivo: z.enum(["CSA-K", "CSA-G", "ETTRINGITA", "NENHUM"]),
+  teorAgente: z.number().min(0).max(200),
+  adicaoMineral: z.enum(["SILICA_ATIVA", "METACAULIM", "NENHUMA"]).optional(),
+  teorAdicaoMineral: z.number().min(0).max(200).optional(),
+  temFibra: z.boolean(),
+  tipoFibra: z.enum(["PP", "PVA"]).optional(),
+  teorFibra: z.number().min(0).max(50).optional(),
+  superplastificante: z.number().min(0).max(5).optional(),
+  incorporadorAr: z.number().min(0).max(2).optional(),
+  espalhamentoAlvo: z.number().min(50).max(400),
+})
 
-  /** Tipo de agente expansivo CRC */
-  agenteExpansivo: "CSA-K" | "CSA-G" | "ETTRINGITA" | "NENHUM"
-  /** Teor do agente expansivo — kg/m³ */
-  teorAgente: number
-
-  /** Tipo de adição mineral */
-  adicaoMineral?: "SILICA_ATIVA" | "METACAULIM" | "NENHUMA"
-  /** Teor da adição mineral — kg/m³ */
-  teorAdicaoMineral?: number
-
-  /** Contém fibra polimérica? */
-  temFibra: boolean
-  /** Tipo de fibra */
-  tipoFibra?: "PP" | "PVA"
-  /** Teor de fibra — kg/m³ */
-  teorFibra?: number
-
-  /** Superplastificante — % sobre cimento */
-  superplastificante?: number
-  /** Incorporador de ar — % sobre cimento */
-  incorporadorAr?: number
-
-  /** Espalhamento alvo — mm (classe FA NBR 15823) */
-  espalhamentoAlvo: number
-}
+export type NivelixInput = z.infer<typeof nivelixInputSchema>
