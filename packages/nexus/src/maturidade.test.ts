@@ -53,8 +53,8 @@ describe("calcMaturidade — Nurse-Saul + Arrhenius", () => {
     expect(r.curva.length).toBe(leituras.length);
     // Curva é crescente
     for (let i = 1; i < r.curva.length; i++) {
-      expect(r.curva[i].nurseSaul).toBeGreaterThanOrEqual(r.curva[i - 1].nurseSaul);
-      expect(r.curva[i].arrhenius_te).toBeGreaterThanOrEqual(r.curva[i - 1].arrhenius_te);
+      expect(r.curva[i]!.nurseSaul).toBeGreaterThanOrEqual(r.curva[i - 1]!.nurseSaul);
+      expect(r.curva[i]!.arrhenius_te).toBeGreaterThanOrEqual(r.curva[i - 1]!.arrhenius_te);
     }
   });
 

@@ -236,6 +236,9 @@ importers:
       '@concrya/engine':
         specifier: workspace:*
         version: link:../../packages/engine
+      '@concrya/nexus':
+        specifier: workspace:*
+        version: link:../../packages/nexus
       '@concrya/schemas':
         specifier: workspace:*
         version: link:../../packages/schemas

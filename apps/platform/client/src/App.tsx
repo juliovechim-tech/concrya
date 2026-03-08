@@ -27,6 +27,7 @@ const NivelixCore = lazy(() => import("./pages/NivelixCore"));
 const EcoriskCore = lazy(() => import("./pages/EcoriskCore"));
 const Historico = lazy(() => import("./pages/Historico"));
 const DensusEnginePage = lazy(() => import("./pages/DensusEngine"));
+const NexusCore = lazy(() => import("./pages/NexusCore"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 function PageLoader() {
@@ -68,6 +69,7 @@ function Router() {
           <Route path={"/ecorisk"} component={EcoriskCore} />
           <Route path={"/historico"} component={Historico} />
           <Route path={"/dosagem"} component={DensusEnginePage} />
+          <Route path={"/nexus"} component={NexusCore} />
           <Route path={"/404"} component={NotFound} />
           {/* Final fallback route */}
           <Route component={NotFound} />

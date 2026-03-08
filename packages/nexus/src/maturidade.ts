@@ -65,15 +65,17 @@ export function calcMaturidade(leituras: LeituraIoT[]): MaturidadeResult {
   let teArrhenius = 0;
   const curva: MaturidadeResult["curva"] = [];
 
-  // Ponto inicial
-  curva.push({ tempo_h: leituras[0].tempo_h, nurseSaul: 0, arrhenius_te: 0 });
+  // Ponto inicial (length >= 2 garantido acima)
+  curva.push({ tempo_h: leituras[0]!.tempo_h, nurseSaul: 0, arrhenius_te: 0 });
 
   for (let i = 1; i < leituras.length; i++) {
-    const dt = leituras[i].tempo_h - leituras[i - 1].tempo_h;
+    const cur = leituras[i]!;
+    const prev = leituras[i - 1]!;
+    const dt = cur.tempo_h - prev.tempo_h;
     if (dt <= 0) continue;
 
     // Temperatura média no intervalo
-    const tMed = (leituras[i].temp_C + leituras[i - 1].temp_C) / 2;
+    const tMed = (cur.temp_C + prev.temp_C) / 2;
 
     // Nurse-Saul: Σ (T - T0) × Δt
     nurseSaul += (tMed - T0_NURSE_SAUL) * dt;
@@ -84,7 +86,7 @@ export function calcMaturidade(leituras: LeituraIoT[]): MaturidadeResult {
     teArrhenius += dt * fatorArr;
 
     curva.push({
-      tempo_h: leituras[i].tempo_h,
+      tempo_h: cur.tempo_h,
       nurseSaul,
       arrhenius_te: teArrhenius,
     });

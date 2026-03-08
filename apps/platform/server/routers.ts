@@ -11,6 +11,7 @@ import { TRPCError } from "@trpc/server";
 import { runPipeline, runVerticalPipeline } from "@concrya/engine/pipeline";
 import type { MixInput } from "@concrya/schemas";
 import { compensaInputSchema, nivelixInputSchema, ecoriskInputSchema, densusInputSchema } from "@concrya/schemas";
+import { calcMaturidade, calcCalorimetria } from "@concrya/nexus";
 
 // Limites de traços por nível de plano
 const LIMITE_TRACOS: Record<string, number> = {
@@ -901,6 +902,41 @@ export const appRouter = router({
         }
 
         return packet;
+      }),
+  }),
+
+  // NEXUS — Maturidade IoT + Calorimetria
+  nexus: router({
+    calcMaturidade: avancadoProcedure
+      .input(z.object({
+        leituras: z.array(z.object({
+          tempo_h: z.number().min(0),
+          temp_C: z.number().min(-40).max(100),
+        })).min(2),
+        tipo_cp: z.string().min(1),
+        cimento_kg: z.number().min(50).max(1200),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const maturidade = calcMaturidade(input.leituras);
+        const calorimetria = calcCalorimetria(
+          maturidade.grauHidratacao,
+          input.cimento_kg,
+          input.tipo_cp,
+        );
+
+        const result = { maturidade, calorimetria };
+
+        const db = await getDb();
+        if (db) {
+          await db.insert(calculations).values({
+            userId: ctx.user.id,
+            feature: "nexus",
+            input: input,
+            output: result,
+          });
+        }
+
+        return result;
       }),
   }),
 

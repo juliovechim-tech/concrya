@@ -28,6 +28,7 @@ import {
   Leaf,
   History,
   Cog,
+  Activity,
 } from "lucide-react";
 import { useState } from "react";
 
@@ -57,10 +58,11 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     { label: "NIVELIX", path: "/nivelix", icon: Layers },
     { label: "ECORISK", path: "/ecorisk", icon: Leaf },
     { label: "Densus Engine", path: "/dosagem", icon: Cog },
+    { label: "NEXUS IoT", path: "/nexus", icon: Activity },
   ];
 
   const isLabActive = location.startsWith("/laboratorio") || location === "/dashboard-custos";
-  const isSolActive = location === "/compensa" || location === "/nivelix" || location === "/ecorisk" || location === "/dosagem";
+  const isSolActive = location === "/compensa" || location === "/nivelix" || location === "/ecorisk" || location === "/dosagem" || location === "/nexus";
 
   return (
     <div className="min-h-screen flex flex-col bg-background text-foreground font-sans selection:bg-primary selection:text-primary-foreground">
