@@ -1,6 +1,8 @@
 import { useAuth } from "@/_core/hooks/useAuth";
 import { trpc } from "@/lib/trpc";
 
+const isDev = import.meta.env.DEV && !import.meta.env.VITE_OAUTH_PORTAL_URL;
+
 export type NivelPlano = "gratuito" | "tecnico" | "avancado" | "cientifico";
 
 export interface PlanoInfo {
@@ -68,11 +70,12 @@ export function usePlano() {
   const { user, isAuthenticated } = useAuth();
 
   const { data: licencaData, isLoading } = trpc.minhaLicenca.get.useQuery(undefined, {
-    enabled: isAuthenticated && !!user?.id,
+    enabled: !isDev && isAuthenticated && !!user?.id,
     staleTime: 1000 * 60 * 5, // 5 minutos
   });
 
   const getNivelFromLicenca = (): NivelPlano => {
+    if (isDev) return "cientifico";
     if (!licencaData?.licenca) return "gratuito";
     
     const licenca = licencaData.licenca;

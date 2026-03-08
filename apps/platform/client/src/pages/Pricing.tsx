@@ -240,7 +240,7 @@ export default function Pricing() {
                 className={`w-full font-bold uppercase tracking-wider rounded-none h-12 ${plano.corBotao}`}
                 asChild
               >
-                <Link href={plano.precoMensal === 0 ? "/" : "/checkout"}>
+                <Link href={plano.precoMensal === 0 ? "/" : "/planos"}>
                   {plano.precoMensal === 0 ? 'Começar Grátis' : 'Assinar Agora'}
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
