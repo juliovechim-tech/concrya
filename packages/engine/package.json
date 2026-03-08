@@ -20,7 +20,8 @@
     "@concrya/schemas": "workspace:*",
     "@concrya/compensa": "workspace:*",
     "@concrya/nivelix": "workspace:*",
-    "@concrya/ecorisk": "workspace:*"
+    "@concrya/ecorisk": "workspace:*",
+    "@concrya/aion": "workspace:*"
   },
   "devDependencies": {
     "typescript": "^5.5.3",

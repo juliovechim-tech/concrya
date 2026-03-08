@@ -115,9 +115,22 @@ describe("Pipeline E2E — Traco NIVELIX OS (Chimica Edile)", () => {
     expect(packet.ecorisk!.recomendacoes.length).toBeGreaterThan(0)
   })
 
-  // ── Secao aion (nao implementado) ───────────────────────────
-  it("aion nao preenchido (futuro)", () => {
-    expect(packet.aion).toBeUndefined()
+  // ── Secao aion ─────────────────────────────────────────────
+  it("aion preenchido", () => {
+    expect(packet.aion).toBeDefined()
+  })
+
+  it("aion: fcPredito > 0", () => {
+    expect(packet.aion!.fcPredito).toBeGreaterThan(0)
+  })
+
+  it("aion: confianca entre 0.40 e 0.98", () => {
+    expect(packet.aion!.confianca).toBeGreaterThanOrEqual(0.40)
+    expect(packet.aion!.confianca).toBeLessThanOrEqual(0.98)
+  })
+
+  it("aion: modelo === abrams-v1", () => {
+    expect(packet.aion!.modelo).toBe("abrams-v1")
   })
 
   // ── Imutabilidade (funcao pura) ─────────────────────────────
