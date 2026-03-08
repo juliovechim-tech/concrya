@@ -296,7 +296,7 @@ export default function NivelCientifico() {
       `Fibras: ${calculos.massaFibras.toFixed(1)} kg (${calculos.teorFibras.toFixed(1)}%%)%0A%0A` +
       `Massa unitária: ${calculos.massaUnitaria.toFixed(0)} kg/m³%0A` +
       `fck estimado: ${calculos.fckEstimado.toFixed(0)} MPa%0A%0A` +
-      `_Mestres do Concreto - Nível Científico_`;
+      `_CONCRYA Technologies - Nível Científico_`;
 
     window.open(`https://wa.me/5511982618300?text=${texto}`, "_blank");
   };

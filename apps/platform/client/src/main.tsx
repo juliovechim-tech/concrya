@@ -10,7 +10,10 @@ import "./index.css";
 
 const queryClient = new QueryClient();
 
+const isDev = import.meta.env.DEV && !import.meta.env.VITE_OAUTH_PORTAL_URL;
+
 const redirectToLoginIfUnauthorized = (error: unknown) => {
+  if (isDev) return;
   if (!(error instanceof TRPCClientError)) return;
   if (typeof window === "undefined") return;
 

@@ -94,7 +94,7 @@ export default function Kits() {
             Temos uma linha completa de pigmentos, desmoldantes, selantes e aditivos especiais para cada tipo de aplicação.
           </p>
           <Button variant="outline" size="lg" className="border-primary text-primary hover:bg-primary hover:text-white font-bold uppercase tracking-wider h-14 px-8 rounded-none transition-all" asChild>
-            <a href="https://mestresconcreto.com/insumos" target="_blank" rel="noreferrer">
+            <a href="https://concrya.com.br/insumos" target="_blank" rel="noreferrer">
               Ver Catálogo Completo
               <ArrowRight className="ml-2 h-5 w-5" />
             </a>

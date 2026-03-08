@@ -235,7 +235,7 @@ export default function NivelAvancado() {
       `Areia: ${calculos.massaMiudos.toFixed(1)} kg%0A` +
       `Brita: ${calculos.massaGraudos.toFixed(1)} kg%0A` +
       `Água: ${calculos.aguaCorrigida.toFixed(1)} L%0A%0A` +
-      `_Mestres do Concreto_`;
+      `_CONCRYA Technologies_`;
 
     window.open(`https://wa.me/5511982618300?text=${texto}`, "_blank");
   };

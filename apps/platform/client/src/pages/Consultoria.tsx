@@ -159,7 +159,7 @@ export default function Consultoria() {
             className="rounded-none border-primary text-primary hover:bg-primary hover:text-white"
             asChild
           >
-            <a href="https://mestresconcreto.com/consultoria" target="_blank" rel="noreferrer">
+            <a href="https://concrya.com.br/consultoria" target="_blank" rel="noreferrer">
               <ExternalLink className="mr-2 h-4 w-4" />
               Ver mais no site principal
             </a>
@@ -316,9 +316,9 @@ export default function Consultoria() {
         <h3 className="text-lg font-bold uppercase tracking-tight mb-4">Prefere outro canal?</h3>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <Button variant="ghost" className="text-muted-foreground hover:text-primary" asChild>
-            <a href="mailto:contato@mestresconcreto.com">
+            <a href="mailto:contato@concrya.com.br">
               <Mail className="mr-2 h-4 w-4" />
-              contato@mestresconcreto.com
+              contato@concrya.com.br
             </a>
           </Button>
           <Button variant="ghost" className="text-muted-foreground hover:text-primary" asChild>

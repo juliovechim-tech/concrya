@@ -26,15 +26,15 @@ import { motion } from "framer-motion";
 const brindes = [
   {
     id: "planilha-profissional",
-    titulo: "Planilha Profissional Mestres do Concreto",
-    descricao: "Planilha completa com identidade visual Mestres do Concreto. Inclui cadastro de materiais, cálculo de traço, correção de água para sílica em suspensão e hyperlinks para nossas redes. Senha: mestres2024",
+    titulo: "Planilha Profissional CONCRYA Technologies",
+    descricao: "Planilha completa com identidade visual CONCRYA Technologies. Inclui cadastro de materiais, cálculo de traço, correção de água para sílica em suspensão e hyperlinks para nossas redes. Senha: mestres2024",
     arquivo: "/downloads/MESTRES-Dosagem-Profissional.xlsx",
     tipo: "Excel",
     tamanho: "20 KB",
     icon: FileSpreadsheet,
     destaque: true,
     correcoesAplicadas: [
-      "Identidade visual Mestres do Concreto (laranja, preto, branco)",
+      "Identidade visual CONCRYA Technologies (laranja, preto, branco)",
       "Hyperlinks para site, Instagram e WhatsApp",
       "Cálculo automático de desconto de água da sílica",
       "Proteção por senha (mestres2024)",
@@ -157,10 +157,10 @@ export default function Downloads() {
             <span className="text-sm font-medium text-orange-500">Materiais Exclusivos</span>
           </div>
           <h2 className="text-3xl md:text-4xl font-black uppercase tracking-tighter mb-4">
-            Ferramentas para <span className="text-orange-500">Mestres</span>
+            Ferramentas para <span className="text-orange-500">CONCRYA</span>
           </h2>
           <p className="text-muted-foreground max-w-2xl mx-auto">
-            Baixe planilhas, calculadoras e guias desenvolvidos pela equipe Mestres do Concreto. 
+            Baixe planilhas, calculadoras e guias desenvolvidos pela equipe CONCRYA Technologies. 
             Materiais técnicos de qualidade para elevar seu trabalho.
           </p>
         </motion.div>
@@ -315,7 +315,7 @@ export default function Downloads() {
                       {loading ? "Cadastrando..." : "Liberar Downloads"}
                     </Button>
                     <p className="text-xs text-muted-foreground text-center">
-                      Ao cadastrar, você concorda em receber comunicações da Mestres do Concreto.
+                      Ao cadastrar, você concorda em receber comunicações da CONCRYA Technologies.
                     </p>
                   </form>
                 )}

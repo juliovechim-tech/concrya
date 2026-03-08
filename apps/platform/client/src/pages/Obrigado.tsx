@@ -65,7 +65,7 @@ export default function Obrigado() {
     (window as any).fbq('track', 'Purchase', {
       value: 29.90,
       currency: 'BRL',
-      content_name: 'Mestres do Concreto - Assinatura',
+      content_name: 'CONCRYA Technologies - Assinatura',
       content_type: 'product'
     });
   }, []);
@@ -145,7 +145,7 @@ export default function Obrigado() {
           </h1>
           
           <p className="text-xl text-muted-foreground mb-6">
-            Bem-vindo à família Mestres do Concreto! Seu acesso já está liberado.
+            Bem-vindo à família CONCRYA Technologies! Seu acesso já está liberado.
           </p>
 
           <div className="inline-flex items-center gap-2 px-4 py-2 bg-green-500/10 border border-green-500/30 text-green-500 text-sm font-bold uppercase tracking-wider">
@@ -162,10 +162,10 @@ export default function Obrigado() {
               className="bg-[#25D366] hover:bg-[#128C7E] text-white rounded-none font-bold uppercase tracking-wider"
               onClick={() => {
                 const texto = encodeURIComponent(
-                  `🏗️ Acabei de assinar o Mestres do Concreto!\n\n` +
+                  `🏗️ Acabei de assinar o CONCRYA Technologies!\n\n` +
                   `A melhor plataforma de dosagem de concreto do Brasil.\n` +
                   `Do pedreiro ao cientista da NASA!\n\n` +
-                  `👉 Confira: https://mestresconcreto.com`
+                  `👉 Confira: https://concrya.com.br`
                 );
                 window.open(`https://wa.me/?text=${texto}`, '_blank');
               }}
@@ -335,9 +335,9 @@ export default function Obrigado() {
               </a>
             </Button>
             <Button variant="outline" className="rounded-none" asChild>
-              <a href="mailto:suporte@mestresconcreto.com">
+              <a href="mailto:suporte@concrya.com.br">
                 <Mail className="mr-2 h-4 w-4" />
-                suporte@mestresconcreto.com
+                suporte@concrya.com.br
               </a>
             </Button>
           </div>
@@ -346,7 +346,7 @@ export default function Obrigado() {
 
       {/* Footer */}
       <footer className="py-8 px-4 text-center text-sm text-muted-foreground border-t border-border">
-        <p>© 2024 Mestres do Concreto. Todos os direitos reservados.</p>
+        <p>© 2024 CONCRYA Technologies. Todos os direitos reservados.</p>
         <div className="flex justify-center gap-4 mt-4">
           <Link href="/" className="hover:text-primary">Início</Link>
           <Link href="/calculadora" className="hover:text-primary">Calculadora</Link>

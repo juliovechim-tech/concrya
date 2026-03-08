@@ -14,12 +14,12 @@ export default function FAQ() {
       titulo: "Sobre a Plataforma",
       perguntas: [
         {
-          pergunta: "O que é o Mestres do Concreto?",
-          resposta: "O Mestres do Concreto é uma plataforma completa de dosagem de concreto que atende desde pedreiros até engenheiros e pesquisadores. Oferecemos calculadoras para diferentes níveis de complexidade: Básico (traços em latas), Técnico (ABCP/ACI), Avançado (CAA e empacotamento) e Científico (UHPC e metodologia de Larrard)."
+          pergunta: "O que é o CONCRYA Technologies?",
+          resposta: "O CONCRYA Technologies é uma plataforma completa de dosagem de concreto que atende desde pedreiros até engenheiros e pesquisadores. Oferecemos calculadoras para diferentes níveis de complexidade: Básico (traços em latas), Técnico (ABCP/ACI), Avançado (CAA e empacotamento) e Científico (UHPC e metodologia de Larrard)."
         },
         {
           pergunta: "Preciso instalar algum software?",
-          resposta: "Não! O Mestres do Concreto funciona 100% online, direto no navegador. Você pode acessar de qualquer dispositivo: computador, tablet ou celular. Seus traços ficam salvos na nuvem e sincronizados automaticamente."
+          resposta: "Não! O CONCRYA Technologies funciona 100% online, direto no navegador. Você pode acessar de qualquer dispositivo: computador, tablet ou celular. Seus traços ficam salvos na nuvem e sincronizados automaticamente."
         },
         {
           pergunta: "A plataforma funciona offline?",

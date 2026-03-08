@@ -138,14 +138,14 @@ export default function Home() {
               className="mt-8"
             >
               <a 
-                href="https://mestresconcreto.com" 
+                href="https://concrya.com.br" 
                 target="_blank" 
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-gradient-to-r from-primary/20 to-orange-500/20 border border-primary/30 hover:border-primary/50 transition-all duration-300 group"
               >
                 <ExternalLink className="w-4 h-4 text-primary" />
                 <span className="text-sm font-medium">Conheça o site completo</span>
-                <span className="text-primary font-bold">mestresconcreto.com</span>
+                <span className="text-primary font-bold">concrya.com.br</span>
                 <ChevronRight className="w-4 h-4 text-primary group-hover:translate-x-1 transition-transform" />
               </a>
             </motion.div>
@@ -243,7 +243,7 @@ export default function Home() {
               </CardHeader>
               <CardContent>
                 <Button className="w-full" asChild>
-                  <a href="https://mestresconcreto.com/" target="_blank" rel="noopener noreferrer">
+                  <a href="https://concrya.com.br/" target="_blank" rel="noopener noreferrer">
                     Ver Cursos
                     <ExternalLink className="w-4 h-4 ml-2" />
                   </a>
@@ -262,7 +262,7 @@ export default function Home() {
               </CardHeader>
               <CardContent>
                 <Button className="w-full bg-orange-500 hover:bg-orange-600" asChild>
-                  <a href="https://mestresconcreto.com/kits" target="_blank" rel="noreferrer">
+                  <a href="https://concrya.com.br/kits" target="_blank" rel="noreferrer">
                     Ver Produtos
                     <ArrowRight className="w-4 h-4 ml-2" />
                   </a>
@@ -302,7 +302,7 @@ export default function Home() {
               para criar materiais que transcendem sua função estrutural."
             </blockquote>
             <footer className="text-sm font-medium">
-              — Julio Vechim, Mestres do Concreto
+              — Julio Vechim, CONCRYA Technologies
             </footer>
           </div>
         </div>
@@ -313,11 +313,11 @@ export default function Home() {
         <div className="container">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <p className="text-sm text-muted-foreground">
-              Siga a Mestres do Concreto nas redes sociais
+              Siga a CONCRYA Technologies nas redes sociais
             </p>
             <div className="flex gap-4">
               <Button variant="ghost" size="icon" asChild>
-                <a href="https://www.instagram.com/mestresdoconcreto/" target="_blank" rel="noopener noreferrer">
+                <a href="https://www.instagram.com/concrya.tech/" target="_blank" rel="noopener noreferrer">
                   <Instagram className="w-5 h-5" />
                 </a>
               </Button>

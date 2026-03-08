@@ -6,7 +6,7 @@ export const exportarFichaDosagem = (dados: any) => {
 
   // Dados para a planilha
   const ws_data = [
-    ["MESTRES DO CONCRETO - FICHA DE DOSAGEM"],
+    ["CONCRYA TECHNOLOGIES - FICHA DE DOSAGEM"],
     [""],
     ["DATA:", new Date().toLocaleDateString()],
     ["VOLUME DA MASSADA:", `${dados.volume} Litros`],
@@ -21,8 +21,8 @@ export const exportarFichaDosagem = (dados: any) => {
     ["TOTAL", "", dados.custoTotal],
     [""],
     ["OBSERVAÇÕES:"],
-    ["Traço calculado via aplicativo Mestres do Concreto"],
-    ["www.mestresdoconcreto.com"]
+    ["Traço calculado via aplicativo CONCRYA Technologies"],
+    ["concrya.com.br"]
   ];
 
   // Criar worksheet
@@ -46,7 +46,7 @@ export const exportarRelatorioEnsaios = (ensaios: any[]) => {
   const wb = XLSX.utils.book_new();
 
   const ws_data = [
-    ["MESTRES DO CONCRETO - RELATÓRIO DE ENSAIOS"],
+    ["CONCRYA TECHNOLOGIES - RELATÓRIO DE ENSAIOS"],
     [""],
     ["IDADE (DIAS)", "CP 1 (MPa)", "CP 2 (MPa)", "MÉDIA (MPa)"],
     ...ensaios.map(e => [e.idade, e.cp1, e.cp2, e.resistencia]),
@@ -83,7 +83,7 @@ export const exportarCSV = (dados: any[], nomeArquivo: string) => {
 
 export const exportarFichaDosagemCSV = (dados: any) => {
   const ws_data = [
-    ["MESTRES DO CONCRETO - FICHA DE DOSAGEM"],
+    ["CONCRYA TECHNOLOGIES - FICHA DE DOSAGEM"],
     [""],
     ["DATA", new Date().toLocaleDateString()],
     ["VOLUME DA MASSADA", `${dados.volume} Litros`],
@@ -98,8 +98,8 @@ export const exportarFichaDosagemCSV = (dados: any) => {
     ["TOTAL", "", dados.custoTotal],
     [""],
     ["OBSERVACOES"],
-    ["Traco calculado via aplicativo Mestres do Concreto"],
-    ["www.mestresdoconcreto.com"]
+    ["Traco calculado via aplicativo CONCRYA Technologies"],
+    ["concrya.com.br"]
   ];
   
   exportarCSV(ws_data, `Ficha_Dosagem_${new Date().getTime()}`);
@@ -107,7 +107,7 @@ export const exportarFichaDosagemCSV = (dados: any) => {
 
 export const exportarRelatorioEnsaiosCSV = (ensaios: any[]) => {
   const ws_data = [
-    ["MESTRES DO CONCRETO - RELATORIO DE ENSAIOS"],
+    ["CONCRYA TECHNOLOGIES - RELATORIO DE ENSAIOS"],
     [""],
     ["IDADE (DIAS)", "CP 1 (MPa)", "CP 2 (MPa)", "MEDIA (MPa)"],
     ...ensaios.map(e => [e.idade, e.cp1, e.cp2, e.resistencia]),

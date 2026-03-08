@@ -176,7 +176,7 @@ export default function LandingVendas() {
               </ul>
             </div>
             <div className="p-6 border border-green-500/30 bg-green-500/5">
-              <h3 className="font-bold text-green-500 mb-3">✓ Com Mestres do Concreto:</h3>
+              <h3 className="font-bold text-green-500 mb-3">✓ Com CONCRYA Technologies:</h3>
               <ul className="space-y-2 text-muted-foreground">
                 <li>• Traços calculados em segundos</li>
                 <li>• Precisão técnica garantida</li>
@@ -428,7 +428,7 @@ export default function LandingVendas() {
 
       {/* Footer simples */}
       <footer className="py-8 px-4 text-center text-sm text-muted-foreground">
-        <p>© 2024 Mestres do Concreto. Todos os direitos reservados.</p>
+        <p>© 2024 CONCRYA Technologies. Todos os direitos reservados.</p>
         <p className="mt-2">
           <Link href="/pricing" className="hover:text-primary">Planos</Link>
           {" • "}

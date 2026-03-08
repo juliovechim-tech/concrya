@@ -5,8 +5,8 @@ const OAUTH_PORTAL_URL = import.meta.env.VITE_OAUTH_PORTAL_URL ?? "";
 // Generate login URL at runtime so redirect URI reflects the current origin.
 export const getLoginUrl = () => {
   if (!OAUTH_PORTAL_URL) {
-    // dev local — sem OAuth, retornar rota interna
-    return "/dev-login";
+    // dev local — sem OAuth, ficar na home
+    return "/";
   }
 
   const appId = import.meta.env.VITE_APP_ID;

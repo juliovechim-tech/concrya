@@ -41,10 +41,10 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const [solOpen, setSolOpen] = useState(false);
 
   const navItems = [
-    { label: "Site Principal", path: "https://mestresconcreto.com", icon: Globe, external: true },
+    { label: "Site Principal", path: "https://concrya.com.br", icon: Globe, external: true },
     { label: "Calculadora", path: "/", icon: Calculator },
     { label: "Tutoriais", path: "/tutoriais", icon: BookOpen },
-    { label: "Kits & Insumos", path: "https://mestresconcreto.com/kits", icon: ShoppingBag, external: true },
+    { label: "Kits & Insumos", path: "https://concrya.com.br/kits", icon: ShoppingBag, external: true },
     { label: "Consultoria", path: "/consultoria", icon: MessageCircle },
     { label: "Planos", path: "/pricing", icon: CreditCard },
     { label: "Historico", path: "/historico", icon: History },
@@ -76,11 +76,11 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           <Link href="/">
             <div className="flex items-center gap-2 cursor-pointer group">
               <div className="w-10 h-10 flex items-center justify-center rounded-full overflow-hidden">
-                <img src="/logo-mestres-circular.png" alt="Mestres do Concreto" className="w-10 h-10 object-cover" />
+                <img src="/logo-mestres-circular.png" alt="CONCRYA Technologies" className="w-10 h-10 object-cover" />
               </div>
               <div className="flex flex-col">
-                <span className="font-bold text-lg leading-none tracking-tighter uppercase">Mestres do</span>
-                <span className="font-bold text-lg leading-none tracking-tighter uppercase text-primary group-hover:text-white transition-colors">Concreto</span>
+                <span className="font-bold text-lg leading-none tracking-tighter uppercase">CONCRYA</span>
+                <span className="font-bold text-lg leading-none tracking-tighter uppercase text-primary group-hover:text-white transition-colors">Technologies</span>
               </div>
             </div>
           </Link>
@@ -266,10 +266,10 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                     </Button>
                   </Link>
                   <div className="flex justify-center gap-6">
-                    <a href="https://www.instagram.com/mestresdoconcreto/" target="_blank" rel="noreferrer" className="text-muted-foreground hover:text-primary transition-colors">
+                    <a href="https://www.instagram.com/concrya.tech/" target="_blank" rel="noreferrer" className="text-muted-foreground hover:text-primary transition-colors">
                       <Instagram className="h-6 w-6" />
                     </a>
-                    <a href="https://mestresconcreto.com/" target="_blank" rel="noreferrer" className="text-muted-foreground hover:text-primary transition-colors">
+                    <a href="https://concrya.com.br/" target="_blank" rel="noreferrer" className="text-muted-foreground hover:text-primary transition-colors">
                       <Globe className="h-6 w-6" />
                     </a>
                     <a href="https://wa.me/5511982618300" target="_blank" rel="noreferrer" className="text-muted-foreground hover:text-primary transition-colors">
@@ -295,22 +295,22 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             <div className="col-span-1 md:col-span-2">
               <div className="flex items-center gap-2 mb-6">
                 <div className="w-10 h-10 flex items-center justify-center rounded-full overflow-hidden">
-                  <img src="/logo-mestres-circular.png" alt="Mestres do Concreto" className="w-10 h-10 object-cover" />
+                  <img src="/logo-mestres-circular.png" alt="CONCRYA Technologies" className="w-10 h-10 object-cover" />
                 </div>
-                <span className="font-bold text-xl uppercase tracking-tighter">Mestres do Concreto</span>
+                <span className="font-bold text-xl uppercase tracking-tighter">CONCRYA Technologies</span>
               </div>
               <p className="text-muted-foreground max-w-md mb-6 font-mono text-sm">
                 Método, Critério e Evolução Real. Transformando a maneira como você trabalha com concreto, do hobby à profissão.
               </p>
               <div className="flex gap-4">
                 <Button variant="outline" size="icon" className="rounded-none border-border hover:bg-primary hover:text-white hover:border-primary transition-all" asChild>
-                  <a href="https://www.instagram.com/mestresdoconcreto/" target="_blank" rel="noreferrer"><Instagram className="h-5 w-5" /></a>
+                  <a href="https://www.instagram.com/concrya.tech/" target="_blank" rel="noreferrer"><Instagram className="h-5 w-5" /></a>
                 </Button>
                 <Button variant="outline" size="icon" className="rounded-none border-border hover:bg-primary hover:text-white hover:border-primary transition-all" asChild>
                   <a href="https://wa.me/5511982618300" target="_blank" rel="noreferrer"><MessageCircle className="h-5 w-5" /></a>
                 </Button>
                 <Button variant="outline" size="icon" className="rounded-none border-border hover:bg-primary hover:text-white hover:border-primary transition-all" asChild>
-                  <a href="https://mestresconcreto.com/" target="_blank" rel="noreferrer"><Globe className="h-5 w-5" /></a>
+                  <a href="https://concrya.com.br/" target="_blank" rel="noreferrer"><Globe className="h-5 w-5" /></a>
                 </Button>
               </div>
             </div>
@@ -329,17 +329,17 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             <div>
               <h3 className="font-bold uppercase tracking-wider mb-6 text-primary">Recursos</h3>
               <ul className="space-y-3 font-mono text-sm">
-                <li><a href="https://mestresconcreto.com/cursos" target="_blank" rel="noreferrer" className="text-muted-foreground hover:text-white transition-colors">Cursos Online</a></li>
-                <li><a href="https://mestresconcreto.com/kits" target="_blank" rel="noreferrer" className="text-muted-foreground hover:text-white transition-colors">Kits Dry Mix</a></li>
-                <li><a href="https://mestresconcreto.com/consultoria" target="_blank" rel="noreferrer" className="text-muted-foreground hover:text-white transition-colors">Consultoria Técnica</a></li>
-                <li><a href="https://mestresconcreto.com/blog" target="_blank" rel="noreferrer" className="text-muted-foreground hover:text-white transition-colors">Blog Técnico</a></li>
+                <li><a href="https://concrya.com.br/cursos" target="_blank" rel="noreferrer" className="text-muted-foreground hover:text-white transition-colors">Cursos Online</a></li>
+                <li><a href="https://concrya.com.br/kits" target="_blank" rel="noreferrer" className="text-muted-foreground hover:text-white transition-colors">Kits Dry Mix</a></li>
+                <li><a href="https://concrya.com.br/consultoria" target="_blank" rel="noreferrer" className="text-muted-foreground hover:text-white transition-colors">Consultoria Técnica</a></li>
+                <li><a href="https://concrya.com.br/blog" target="_blank" rel="noreferrer" className="text-muted-foreground hover:text-white transition-colors">Blog Técnico</a></li>
               </ul>
             </div>
           </div>
           
           <div className="border-t border-border pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
             <p className="text-xs text-muted-foreground font-mono">
-              © 2025 MESTRES DO CONCRETO. TODOS OS DIREITOS RESERVADOS.
+              © 2025 CONCRYA TECHNOLOGIES. TODOS OS DIREITOS RESERVADOS.
             </p>
             <p className="text-xs text-muted-foreground font-mono">
               DESENVOLVIDO COM MANUS

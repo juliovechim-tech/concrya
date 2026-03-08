@@ -121,7 +121,7 @@ export default function NivelBasico() {
       `💧 Água: ${quantidades.agua.litros} litros%0A%0A` +
       `📐 Volume aproximado: ${quantidades.volume} m³%0A%0A` +
       `💡 Dica: ${tracoSelecionado.dica}%0A%0A` +
-      `_Calculado por Mestres do Concreto_`;
+      `_Calculado por CONCRYA Technologies_`;
 
     window.open(`https://wa.me/?text=${texto}`, "_blank");
   };
