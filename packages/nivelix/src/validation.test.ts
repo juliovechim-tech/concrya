@@ -84,8 +84,8 @@ describe("applyNivelix — validacao reologica", () => {
     })
   })
 
-  // ── CASO C: modulo acustico presente para argamassa ──────────
-  describe("CASO C — argamassa (sem brita) tem moduloAcustico", () => {
+  // ── CASO C: modulo acustico para argamassa ──────────────────
+  describe("CASO C — argamassa (sem brita) moduloAcustico", () => {
     const packet = makePacket({
       slump: 220,
       ac: 0.42,
@@ -94,15 +94,10 @@ describe("applyNivelix — validacao reologica", () => {
     })
     const result = applyNivelix(packet)
 
-    it("moduloAcustico definido para argamassa", () => {
-      expect(result.nivelix!.moduloAcustico).toBeDefined()
-    })
-
-    it("moduloAcustico > 0 (reducao positiva em dB)", () => {
+    it("moduloAcustico undefined quando massaSup < 100 kg/m2 (dB negativo)", () => {
       // massaSup = 0.030 * 2100 = 63 kg/m2 → deltaLw = 20*log10(63/100) ≈ -4 dB
-      // Valor pode ser negativo se massa superficial < 100 kg/m2
-      // O teste verifica que o campo esta preenchido
-      expect(typeof result.nivelix!.moduloAcustico).toBe("number")
+      // dB <= 0 → retorna undefined (fisicamente nao faz sentido reducao negativa)
+      expect(result.nivelix!.moduloAcustico).toBeUndefined()
     })
 
     it("concreto com brita NAO tem moduloAcustico", () => {

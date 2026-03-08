@@ -1,9 +1,12 @@
 // ECORISK — Apply para ConcretePacket
 //
 // Recebe um ConcretePacket, calcula eco-indicadores e dominios de risco
-// a partir dos dados do mix, e retorna o packet com secao `ecorisk`.
+// e retorna o packet com secao `ecorisk`.
+//
+// Se packet.ecoriskInput presente → usa input tipado.
+// Se ausente → fallback para packet.mix (retrocompativel).
 
-import type { ConcretePacket } from "@concrya/schemas"
+import type { ConcretePacket, EcoriskInput } from "@concrya/schemas"
 import { calcEcoIndicadores, type EntradaEco } from "./eco"
 import { calcDominiosRisco, type EntradaRisco } from "./risco"
 import { calcEcoriskScore } from "./score"
@@ -19,22 +22,69 @@ function mapTipoCimento(tipo: string): EntradaEco["tipoCimento"] {
   return "cpii"
 }
 
+/** Dados normalizados que ambos os paths produzem */
+interface EcoriskParams {
+  cimentoType: string
+  fck: number
+  ac: number
+  slumpMm: number
+  consumoCimento: number
+  consumoAgua: number
+  consumoAreia: number
+  consumoBrita: number
+  adicoes?: Record<string, number>
+}
+
+function extractFromTypedInput(input: EcoriskInput): EcoriskParams {
+  return {
+    cimentoType: input.cimentoType,
+    fck: input.fck,
+    ac: input.ac,
+    slumpMm: input.slump ?? input.espalhamento ?? 200,
+    consumoCimento: input.consumoCimento,
+    consumoAgua: input.consumoAgua,
+    consumoAreia: input.consumoAreia,
+    consumoBrita: input.consumoBrita,
+    adicoes: input.adicoes,
+  }
+}
+
+function extractFromMix(mix: ConcretePacket["mix"]): EcoriskParams {
+  return {
+    cimentoType: mix.cimentoType,
+    fck: mix.fck,
+    ac: mix.ac,
+    slumpMm: mix.slump,
+    consumoCimento: mix.consumoCimento,
+    consumoAgua: mix.consumoAgua,
+    consumoAreia: mix.consumoAreia,
+    consumoBrita: mix.consumoBrita,
+    adicoes: mix.adicoes,
+  }
+}
+
 /**
  * Aplica o framework ECORISK ao ConcretePacket.
+ *
+ * Se packet.ecoriskInput presente → usa input tipado.
+ * Se ausente → fallback para packet.mix (retrocompativel).
+ *
  * Calcula eco-indicadores + dominios de risco → score Dw.
  * Retorna novo packet com secao `ecorisk` preenchida.
  */
 export function applyEcorisk(packet: ConcretePacket): ConcretePacket {
-  const { mix } = packet
+  const params = packet.ecoriskInput
+    ? extractFromTypedInput(packet.ecoriskInput)
+    : extractFromMix(packet.mix)
 
   // Montar entrada eco
-  const tipoCimento = mapTipoCimento(mix.cimentoType)
-  const agregadosKgM3 = mix.consumoAreia + mix.consumoBrita
+  const tipoCimento = mapTipoCimento(params.cimentoType)
+  const agregadosKgM3 = params.consumoAreia + params.consumoBrita
 
-  // Converter adicoes do packet para formato ecorisk
+  // Converter adicoes para formato ecorisk
   const adicoesEco: EntradaEco["adicoesKgM3"] = {}
-  if (mix.adicoes) {
-    for (const [chave, valor] of Object.entries(mix.adicoes)) {
+  if (params.adicoes) {
+    for (const [chave, valor] of Object.entries(params.adicoes)) {
       const k = chave.toLowerCase()
       if (k.includes("escoria")) adicoesEco.escoria = valor
       else if (k.includes("cinza")) adicoesEco.cinza_volante = valor
@@ -45,23 +95,23 @@ export function applyEcorisk(packet: ConcretePacket): ConcretePacket {
   }
 
   const eco = calcEcoIndicadores({
-    cimentoKgM3: mix.consumoCimento,
+    cimentoKgM3: params.consumoCimento,
     tipoCimento,
     adicoesKgM3: adicoesEco,
     agregadosKgM3,
-    aguaLM3: mix.consumoAgua,
-    fck28: mix.fck,
+    aguaLM3: params.consumoAgua,
+    fck28: params.fck,
   })
 
   // Montar entrada risco (estimativas a partir do mix)
-  const fckPrevisto = mix.fck * 1.10  // margem de 10% estimada
+  const fckPrevisto = params.fck * 1.10  // margem de 10% estimada
   const risco = calcDominiosRisco({
-    ac: mix.ac,
-    fckAlvo: mix.fck,
+    ac: params.ac,
+    fckAlvo: params.fck,
     fckPrevisto,
-    cimentoKgM3: mix.consumoCimento,
+    cimentoKgM3: params.consumoCimento,
     classeAgressividade: "II",  // default conservador
-    slumpMm: mix.slump,
+    slumpMm: params.slumpMm,
   })
 
   const resultado = calcEcoriskScore({ eco, risco })

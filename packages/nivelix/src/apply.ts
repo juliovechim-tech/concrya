@@ -1,108 +1,139 @@
 // NIVELIX CORE — Apply para ConcretePacket
 //
-// Recebe um ConcretePacket, estima reologia (espalhamento, viscosidade,
-// tensao de escoamento) e retorna o packet com secao `nivelix` preenchida.
+// Quando nivelixInput tipado esta presente no packet, usa modelo
+// Bingham para argamassa autonivelante (sem brita, com filler/fibra/SP/ar).
+// Quando ausente, faz fallback para packet.mix (retrocompativel).
 //
-// Para argamassas autonivelantes, usa modelo de Roussel (2005) com mini-cone.
-// Para concretos convencionais (CCV), estima tau0 a partir do slump (Roussel 2006)
-// e espalhamento via modelo de Roussel & Coussot (2005) com cone de Abrams.
-// Para CAA (slump >= 550mm), usa modelo de flow direto.
+// Modelo Bingham para argamassa:
+//   tau0 = 150 * (0.5 - ac) * (1 - 2*SP/100)  — Pa
+//   mu   = 0.8 + areiaFina/2000 + filler/3000  — Pa·s
+//   espalhamento = 300 * exp(-tau0 / 80)        — mm
 //
-// Ref: Roussel, N. (2006). Cem. Concr. Res. 36(10), 1797-1806.
-//      Roussel, N. & Coussot, P. (2005). J. Rheol. 49(3), 705-718.
+// Ref: Roussel, N. (2005). Cem. Concr. Res.
 //      Wallevik, O.H. (2003). Rheology as a tool in concrete science.
+//      EN 13813 · NBR 15823
 
-import type { ConcretePacket } from "@concrya/schemas"
-import { estimarEspalhamento, estimarTau0DeEspalhamento, classificarEspalhamento } from "./reologia"
+import type { ConcretePacket, NivelixInput } from "@concrya/schemas"
+import { estimarTau0DeEspalhamento, classificarEspalhamento } from "./reologia"
 
 /** Densidade tipica de argamassa autonivelante — kg/m3 */
 const RHO_ARGAMASSA = 2100
 
-/** Densidade tipica de concreto fresco — kg/m3 */
-const RHO_CONCRETO = 2400
+function clamp(value: number, min: number, max: number): number {
+  return Math.max(min, Math.min(max, value))
+}
 
-/**
- * Estima tau0 a partir do slump do concreto (Roussel, 2006).
- * tau0 ≈ (300 - slump_mm) / 0.27  para CCV
- */
-function tau0FromSlump(slumpMm: number): number {
-  if (slumpMm >= 300) return 5  // ultra-fluido
-  return Math.max(1, (300 - slumpMm) / 0.27)
+// ── Modelo tipado: NivelixInput ──────────────────────────────
+
+function calcReologiaNivelix(input: NivelixInput) {
+  const sp = input.superplastificante ?? 0
+  const filler = input.consumoFiller ?? 0
+
+  // tau0 = 150 * (0.5 - ac) * (1 - 2*SP/100)
+  const tau0Raw = 150 * (0.5 - input.ac) * (1 - 2 * sp / 100)
+  const tau0 = Math.round(Math.max(0, tau0Raw) * 10) / 10
+
+  // mu = 0.8 + areiaFina/2000 + filler/3000
+  const mu = 0.8 + input.consumoAreiaFina / 2000 + filler / 3000
+  const muRound = Math.round(Math.max(0.1, mu) * 10) / 10
+
+  // espalhamento = 300 * exp(-tau0 / 80)
+  const espRaw = 300 * Math.exp(-tau0 / 80)
+  const espalhamento = Math.round(clamp(espRaw, 50, 350))
+
+  return { tau0, mu: muRound, espalhamento }
 }
 
 /**
- * Estima viscosidade plastica a partir de a/c (Wallevik, 2003).
- * mu_p ≈ 8 + 120 * (0.55 - a/c) para a/c entre 0.30-0.60
+ * Modulo acustico — so faz sentido se tem fibra.
+ * moduloAcustico = 3.5 * teorFibra + incorporadorAr * 120
  */
-function estimarViscosidade(ac: number): number {
+function calcModuloAcustico(input: NivelixInput): number | undefined {
+  if (!input.temFibra) return undefined
+  const teorFibra = input.teorFibra ?? 0
+  const arIncorp = input.incorporadorAr ?? 0
+  const dB = Math.round((3.5 * teorFibra + arIncorp * 120) * 10) / 10
+  return dB > 0 ? dB : undefined
+}
+
+/**
+ * Status NBR 15823:
+ *   OK:      200-260mm E tau0 < 50 Pa
+ *   RISCO:   160-199mm OU 261-300mm
+ *   CRITICO: < 160mm OU > 300mm
+ */
+function calcStatusNivelix(espalhamento: number, tau0: number): "OK" | "RISCO" | "CRITICO" {
+  if (espalhamento >= 200 && espalhamento <= 260 && tau0 < 50) return "OK"
+  if (espalhamento >= 160 && espalhamento <= 300) return "RISCO"
+  return "CRITICO"
+}
+
+// ── Fallback: packet.mix (retrocompativel) ───────────────────
+
+function tau0FromSlump(slumpMm: number): number {
+  if (slumpMm >= 300) return 5
+  return Math.max(1, (300 - slumpMm) / 0.27)
+}
+
+function estimarViscosidadeFallback(ac: number): number {
   const mu = 8 + 120 * Math.max(0, 0.55 - ac)
   return Math.round(Math.max(2, Math.min(80, mu)) * 10) / 10
 }
 
 /**
- * Para concreto (com brita), o espalhamento e derivado do slump.
- * CCV: espalhamento ≈ slump + 80mm (correlacao empirica, Tattersall 1991)
- * CAA: espalhamento = slump direto (ja e slump flow)
- *
- * Ref: Tattersall, G.H. & Banfill, P.F.G. (1983). Rheology of Fresh Concrete.
- */
-function espalhamentoFromSlump(slumpMm: number): number {
-  if (slumpMm >= 500) return slumpMm  // CAA: slump = slump flow direto
-  // CCV: correlacao empirica — espalhamento ≈ slump (mm)
-  // O "espalhamento" para CCV nao e de flow test,
-  // mas sim o slump como indicador de trabalhabilidade
-  return slumpMm
-}
-
-/**
  * Aplica o motor NIVELIX ao ConcretePacket.
- * Estima parametros reologicos a partir dos dados do mix.
- * Retorna novo packet com secao `nivelix` preenchida.
+ *
+ * Se packet.nivelixInput presente → modelo Bingham tipado.
+ * Se ausente → fallback para packet.mix.
  */
 export function applyNivelix(packet: ConcretePacket): ConcretePacket {
+  const nivelixIn = packet.nivelixInput
+
+  // ── Modo tipado ─────────────────────────────────────────────
+  if (nivelixIn) {
+    const { tau0, mu, espalhamento } = calcReologiaNivelix(nivelixIn)
+    const moduloAcustico = calcModuloAcustico(nivelixIn)
+    const status = calcStatusNivelix(espalhamento, tau0)
+
+    return {
+      ...packet,
+      nivelix: {
+        espalhamento,
+        viscosidadePlastica: mu,
+        tensaoEscoamento: tau0,
+        moduloAcustico,
+        status,
+      },
+    }
+  }
+
+  // ── Fallback: packet.mix ────────────────────────────────────
   const { mix } = packet
-
-  // Estimar tau0 e viscosidade a partir do slump
   const tau0 = tau0FromSlump(mix.slump)
-  const mu = estimarViscosidade(mix.ac)
-
-  // Decidir se e argamassa ou concreto pela presenca de brita
+  const mu = estimarViscosidadeFallback(mix.ac)
   const isArgamassa = mix.consumoBrita < 50
-  const rho = isArgamassa ? RHO_ARGAMASSA : RHO_CONCRETO
 
-  // Espalhamento estimado
   let espalhamento: number
   let tau0Final: number
-  if (isArgamassa) {
-    // Argamassa autonivelante: o campo slump do packet ja pode representar
-    // o espalhamento do mini-cone (EN 12706), nao o slump Abrams.
-    // Se slump >= 140mm, interpretar como espalhamento direto e calcular tau0 reverso.
-    // Abaixo de 140mm, usar tau0FromSlump como fallback.
-    if (mix.slump >= 140) {
-      // Slump = espalhamento medido com mini-cone
-      espalhamento = mix.slump
-      tau0Final = estimarTau0DeEspalhamento(mix.slump, rho)
-    } else {
-      tau0Final = tau0FromSlump(mix.slump)
-      espalhamento = estimarEspalhamento(tau0Final, rho)
-    }
+  if (isArgamassa && mix.slump >= 140) {
+    espalhamento = mix.slump
+    tau0Final = estimarTau0DeEspalhamento(mix.slump, RHO_ARGAMASSA)
   } else {
-    // Concreto: usar slump como indicador direto de trabalhabilidade
     tau0Final = tau0
-    espalhamento = espalhamentoFromSlump(mix.slump)
+    espalhamento = mix.slump
   }
+
   const classe = classificarEspalhamento(espalhamento)
 
-  // Modulo acustico: so faz sentido para argamassa de contrapiso
-  // Estimativa simplificada: deltaLw ≈ 20*log10(massa_superficial/100)
-  // Assume camada de 30mm como referencia
+  // Modulo acustico fallback: massa superficial
   let moduloAcustico: number | undefined
   if (isArgamassa) {
-    const massaSup = (30 / 1000) * rho  // 30mm de espessura — kg/m2
-    moduloAcustico = Math.round(20 * Math.log10(massaSup / 100))
+    const massaSup = (30 / 1000) * RHO_ARGAMASSA
+    const dB = Math.round(20 * Math.log10(massaSup / 100))
+    moduloAcustico = dB > 0 ? dB : undefined
   }
 
-  // Status baseado na classe de espalhamento
+  // Status fallback: classe de espalhamento
   let status: "OK" | "RISCO" | "CRITICO"
   if (classe === "F3" || classe === "F4") {
     status = "OK"

@@ -6,6 +6,11 @@
 //
 // Filosofia: funcoes puras — packet entra, packet sai.
 
+import type { CompensaInput } from "./compensa-input"
+import type { NivelixInput } from "./nivelix-input"
+import type { EcoriskInput } from "./ecorisk-input"
+import type { DensusInput } from "./densus-input"
+
 /**
  * ConcretePacket v1 — estrutura unificada de dados de um traco de concreto
  * que flui entre todos os pacotes do ecossistema CONCRYA.
@@ -67,6 +72,12 @@ export interface ConcretePacket {
     modelo: string
     intervalo?: [number, number] // IC 90% [min, max]
   }
+
+  /** Input tipado da vertical (opcional — usado por apply* em dual-mode) */
+  compensaInput?: CompensaInput
+  nivelixInput?: NivelixInput
+  ecoriskInput?: EcoriskInput
+  densusInput?: DensusInput
 
   /** Dados do Densus Engine (preenchido por applyDensus) */
   densus?: {

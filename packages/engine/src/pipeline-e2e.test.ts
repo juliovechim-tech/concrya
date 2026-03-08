@@ -92,9 +92,9 @@ describe("Pipeline E2E — Traco NIVELIX OS (Chimica Edile)", () => {
     expect(packet.nivelix!.tensaoEscoamento).toBeLessThan(400)
   })
 
-  it("nivelix: moduloAcustico definido (argamassa)", () => {
-    // consumoBrita=0 → isArgamassa=true → moduloAcustico preenchido
-    expect(packet.nivelix!.moduloAcustico).toBeDefined()
+  it("nivelix: moduloAcustico undefined para massaSup < 100 kg/m2", () => {
+    // consumoBrita=0 → isArgamassa=true → massaSup=63 kg/m2 → dB=-4 → undefined
+    expect(packet.nivelix!.moduloAcustico).toBeUndefined()
   })
 
   // ── Secao ecorisk ───────────────────────────────────────────
