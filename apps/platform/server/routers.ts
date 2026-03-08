@@ -863,6 +863,28 @@ export const appRouter = router({
         return packet;
       }),
   }),
+
+  // ECORISK Router
+  ecorisk: router({
+    analyze: avancadoProcedure
+      .input(mixInputSchema)
+      .mutation(async ({ ctx, input }) => {
+        const packet = runPipeline(input);
+
+        // Logar no DB
+        const db = await getDb();
+        if (db) {
+          await db.insert(calculations).values({
+            userId: ctx.user.id,
+            feature: "ecorisk",
+            input: input,
+            output: packet,
+          });
+        }
+
+        return packet;
+      }),
+  }),
 });
 
 export type AppRouter = typeof appRouter;
