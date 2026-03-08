@@ -66,6 +66,37 @@ export interface ConcretePacket {
     drift: boolean
     modelo: string
   }
+
+  /** Dados do Densus Engine (preenchido por applyDensus) */
+  densus?: {
+    tracaoUnitario: {
+      cimento: 1
+      areia: number
+      brita: number
+      agua: number
+    }
+    volumes: {
+      cimento: number   // dm³
+      agua: number
+      areia: number
+      brita: number
+      ar: number
+      total: number
+    }
+    granulometria: {
+      metodo: "Fuller" | "Faury" | "Bolomey" | "Andreasen"
+      curva: Array<{ peneira: number; cpft: number; metodo: string }>
+    }
+    cpm?: {
+      phi: number
+      empacotamentoReal: number
+      materialDominante: string
+    }
+    custo?: {
+      total: number             // R$/m³
+      breakdown: Record<string, number>
+    }
+  }
 }
 
 /**

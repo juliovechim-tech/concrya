@@ -10,7 +10,11 @@
     "./abrams": "./src/abrams.ts",
     "./normativas": "./src/normativas.ts",
     "./thermocore": "./src/thermocore.ts",
-    "./pipeline": "./src/pipeline.ts"
+    "./pipeline": "./src/pipeline.ts",
+    "./dosagem": "./src/dosagem.ts",
+    "./granulometria": "./src/granulometria.ts",
+    "./cpm": "./src/cpm.ts",
+    "./apply-densus": "./src/apply-densus.ts"
   },
   "scripts": {
     "check": "tsc --noEmit",
