@@ -79,6 +79,19 @@ export interface ConcretePacket {
     intervalo?: [number, number] // IC 90% [min, max]
   }
 
+  /** Dados de maturidade IoT (preenchido por @concrya/nexus) */
+  nexus?: {
+    maturidade_Celsius_hora: number   // °C·h (Nurse-Saul)
+    tempo_equivalente_h: number       // h (Arrhenius a 20 °C)
+    grauHidratacao: number            // 0–1
+    calorimetria?: {
+      calor_total_J: number           // J
+      calor_especifico_J_g: number    // J/g
+      taxa_pico_J_g_h: number         // J/(g·h)
+      fase: "INDUCAO" | "ACELERACAO" | "DESACELERACAO" | "DIFUSAO"
+    }
+  }
+
   /** Dados do Densus Engine (preenchido por applyDensus) */
   densus?: {
     tracaoUnitario: {

@@ -45,8 +45,14 @@ export function applyAion(packet: ConcretePacket): ConcretePacket {
     cinzaVolante,
   })
 
-  // Ajustar confianca por status dos outros modulos
+  // Se nexus presente com grauHidratacao real, aumentar confianca
+  // (dados IoT reais são mais confiáveis que estimativa pura)
   let confianca = resultado.confianca
+  if (packet.nexus && packet.nexus.grauHidratacao > 0) {
+    confianca += 0.05
+  }
+
+  // Ajustar confianca por status dos outros modulos
   if (packet.compensa?.status === "CRITICO") {
     confianca -= 0.15
   }
