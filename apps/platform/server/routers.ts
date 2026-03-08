@@ -886,6 +886,35 @@ export const appRouter = router({
       }),
   }),
 
+  // DENSUS ENGINE Router
+  dosagem: router({
+    calcular: avancadoProcedure
+      .input(mixInputSchema.extend({
+        metodoGranulometria: z.enum(["Fuller", "Faury", "Bolomey", "Andreasen"]).default("Fuller"),
+        dmax: z.number().min(1).max(150).default(25),
+        dmin: z.number().min(0.001).max(10).optional(),
+        q: z.number().min(0.1).max(0.9).optional(),
+        precos: z.record(z.string(), z.number()).optional(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const { metodoGranulometria, dmax, dmin, q, precos, ...mixData } = input;
+        const opcoesDensus = { metodoGranulometria, dmax, dmin, q, precos };
+        const packet = runPipeline(mixData, opcoesDensus);
+
+        const db = await getDb();
+        if (db) {
+          await db.insert(calculations).values({
+            userId: ctx.user.id,
+            feature: "densus",
+            input: input,
+            output: packet,
+          });
+        }
+
+        return packet;
+      }),
+  }),
+
   // Histórico de cálculos
   history: router({
     list: protectedProcedure
