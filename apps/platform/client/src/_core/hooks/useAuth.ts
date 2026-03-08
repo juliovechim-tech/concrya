@@ -3,6 +3,15 @@ import { trpc } from "@/lib/trpc";
 import { TRPCClientError } from "@trpc/client";
 import { useCallback, useEffect, useMemo } from "react";
 
+const isDev = import.meta.env.DEV && !import.meta.env.VITE_OAUTH_PORTAL_URL;
+
+const DEV_USER = {
+  id: "dev-user",
+  nome: "Dev Local",
+  email: "dev@concrya.com.br",
+  plano: "avancado",
+};
+
 type UseAuthOptions = {
   redirectOnUnauthenticated?: boolean;
   redirectPath?: string;
@@ -16,6 +25,7 @@ export function useAuth(options?: UseAuthOptions) {
   const meQuery = trpc.auth.me.useQuery(undefined, {
     retry: false,
     refetchOnWindowFocus: false,
+    enabled: !isDev,
   });
 
   const logoutMutation = trpc.auth.logout.useMutation({
@@ -25,6 +35,7 @@ export function useAuth(options?: UseAuthOptions) {
   });
 
   const logout = useCallback(async () => {
+    if (isDev) return;
     try {
       await logoutMutation.mutateAsync();
     } catch (error: unknown) {
@@ -42,6 +53,14 @@ export function useAuth(options?: UseAuthOptions) {
   }, [logoutMutation, utils]);
 
   const state = useMemo(() => {
+    if (isDev) {
+      return {
+        user: DEV_USER,
+        loading: false,
+        error: null,
+        isAuthenticated: true,
+      };
+    }
     localStorage.setItem(
       "manus-runtime-user-info",
       JSON.stringify(meQuery.data)
@@ -61,6 +80,7 @@ export function useAuth(options?: UseAuthOptions) {
   ]);
 
   useEffect(() => {
+    if (isDev) return;
     if (!redirectOnUnauthenticated) return;
     if (meQuery.isLoading || logoutMutation.isPending) return;
     if (state.user) return;
