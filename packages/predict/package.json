@@ -1,0 +1,23 @@
+{
+  "name": "@concrya/predict",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./types": "./src/types.ts",
+    "./dataset": "./src/dataset.ts",
+    "./features": "./src/features.ts",
+    "./regression": "./src/regression.ts"
+  },
+  "scripts": {
+    "check": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "typescript": "^5.5.3",
+    "vitest": "^2.1.4"
+  }
+}
