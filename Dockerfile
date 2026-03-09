@@ -60,5 +60,6 @@ COPY --from=builder /app/apps/platform/shared apps/platform/shared
 COPY --from=builder /app/apps/platform/dist apps/platform/dist
 
 ENV NODE_ENV=production
+WORKDIR /app/apps/platform
 
-CMD ["pnpm", "--filter", "@concrya/platform", "exec", "tsx", "server/_core/prod.ts"]
+CMD ["node_modules/.bin/tsx", "server/_core/prod.ts"]

@@ -33,7 +33,7 @@ async function startServer() {
   );
 
   // Serve estático em produção
-  const distPath = path.resolve(process.cwd(), "apps/platform/dist/public");
+  const distPath = path.resolve(process.cwd(), "dist/public");
   app.use(express.static(distPath));
   app.get("*", (_req, res) => {
     res.sendFile(path.join(distPath, "index.html"));
