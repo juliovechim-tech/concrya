@@ -29,15 +29,19 @@ COPY apps/platform/ apps/platform/
 
 # Build: vite (client → dist/public) + esbuild (server → dist/server.js)
 RUN pnpm --filter @concrya/platform build
-RUN pnpm --filter @concrya/platform exec esbuild \
+RUN cd apps/platform && node_modules/.bin/esbuild \
   server/_core/index.ts \
   --bundle \
   --platform=node \
   --target=node20 \
   --outfile=dist/server.js \
-  --external:better-sqlite3 \
   --external:mysql2 \
-  --external:drizzle-orm
+  --external:drizzle-orm \
+  --external:better-sqlite3 \
+  --external:@node-rs/argon2 \
+  --external:sharp \
+  --resolve-extensions=.ts,.js,.tsx,.jsx \
+  --loader:.ts=ts
 
 # ── Stage 2: Production ─────────────────────────────────────────
 FROM node:20-slim AS production
