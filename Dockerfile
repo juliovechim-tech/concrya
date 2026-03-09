@@ -27,28 +27,8 @@ RUN pnpm install --frozen-lockfile
 COPY packages/ packages/
 COPY apps/platform/ apps/platform/
 
-# Build: vite (client → dist/public) + esbuild (server → dist/server.js)
-RUN pnpm --filter @concrya/platform build
-RUN cd apps/platform && node_modules/.bin/esbuild \
-  server/_core/index.ts \
-  --bundle \
-  --platform=node \
-  --target=node20 \
-  --format=esm \
-  --outfile=dist/server.js \
-  --external:mysql2 \
-  --external:drizzle-orm \
-  --external:better-sqlite3 \
-  --external:@node-rs/argon2 \
-  --external:sharp \
-  --external:vite \
-  --external:lightningcss \
-  --external:@tailwindcss/oxide \
-  --external:@babel/core \
-  --external:@babel/preset-typescript \
-  --external:tailwindcss \
-  --resolve-extensions=.ts,.js,.tsx,.jsx \
-  --loader:.ts=ts
+# Build apenas o client (vite → dist/public)
+RUN pnpm --filter @concrya/platform exec vite build
 
 # ── Stage 2: Production ─────────────────────────────────────────
 FROM node:20-slim AS production
@@ -57,7 +37,7 @@ RUN corepack enable && corepack prepare pnpm@10.4.1 --activate
 
 WORKDIR /app
 
-# Copiar manifests + instalar apenas prod deps
+# Copiar manifests + instalar TODAS as deps (tsx é devDep)
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY apps/platform/package.json apps/platform/package.json
 COPY packages/engine/package.json packages/engine/package.json
@@ -69,12 +49,15 @@ COPY packages/nexus/package.json packages/nexus/package.json
 COPY packages/schemas/package.json packages/schemas/package.json
 COPY packages/types/package.json packages/types/package.json
 
-RUN pnpm install --frozen-lockfile --prod
+RUN pnpm install --frozen-lockfile
 
-# Copiar build artifacts do stage anterior
+# Copiar source code dos packages (tsx precisa resolver .ts em runtime)
+COPY --from=builder /app/packages packages/
+
+# Copiar server source + client build artifacts
+COPY --from=builder /app/apps/platform/server apps/platform/server
 COPY --from=builder /app/apps/platform/dist apps/platform/dist
-COPY --from=builder /app/apps/platform/dist/server.js apps/platform/dist/server.js
 
 ENV NODE_ENV=production
 
-CMD ["node", "apps/platform/dist/server.js"]
+CMD ["node_modules/.bin/tsx", "apps/platform/server/_core/index.ts"]
