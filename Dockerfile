@@ -61,4 +61,4 @@ COPY --from=builder /app/apps/platform/dist apps/platform/dist
 
 ENV NODE_ENV=production
 
-CMD ["node_modules/.bin/tsx", "apps/platform/server/_core/index.ts"]
+CMD ["node_modules/.bin/tsx", "apps/platform/server/_core/prod.ts"]
