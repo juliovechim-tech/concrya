@@ -34,12 +34,19 @@ RUN cd apps/platform && node_modules/.bin/esbuild \
   --bundle \
   --platform=node \
   --target=node20 \
+  --format=esm \
   --outfile=dist/server.js \
   --external:mysql2 \
   --external:drizzle-orm \
   --external:better-sqlite3 \
   --external:@node-rs/argon2 \
   --external:sharp \
+  --external:vite \
+  --external:lightningcss \
+  --external:@tailwindcss/oxide \
+  --external:@babel/core \
+  --external:@babel/preset-typescript \
+  --external:tailwindcss \
   --resolve-extensions=.ts,.js,.tsx,.jsx \
   --loader:.ts=ts
 
