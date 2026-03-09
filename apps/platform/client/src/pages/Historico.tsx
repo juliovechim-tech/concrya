@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, lazy, Suspense } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -19,9 +19,10 @@ import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
 import { usePlano } from "@/hooks/usePlano";
 import { Link } from "wouter";
-import { PDFDownloadLink } from "@react-pdf/renderer";
-import { PacketReport } from "@/components/pdf/PacketReport";
 import type { ConcretePacket } from "@concrya/schemas";
+
+// Lazy load @react-pdf/renderer (~1.5MB) — só carrega quando o botão PDF aparece
+const LazyPdfButton = lazy(() => import("@/components/pdf/PdfDownloadButton"));
 
 type Feature = "compensa" | "nivelix" | "ecorisk";
 
@@ -215,27 +216,18 @@ export default function Historico() {
                       )}
                     </div>
                     <div className="flex items-center gap-2">
-                      <PDFDownloadLink
-                        document={
-                          <PacketReport
-                            packet={output}
-                            feature={feat}
-                            calculationId={item.id}
-                            createdAt={item.createdAt}
-                          />
-                        }
-                        fileName={`concrya-${feat}-${item.id}.pdf`}
-                      >
-                        {({ loading }) => (
-                          <Button variant="outline" size="sm" className="rounded-none" disabled={loading}>
-                            {loading ? (
-                              <Loader2 className="w-4 h-4 animate-spin" />
-                            ) : (
-                              <><FileText className="w-4 h-4 mr-1" /> PDF</>
-                            )}
-                          </Button>
-                        )}
-                      </PDFDownloadLink>
+                      <Suspense fallback={
+                        <Button variant="outline" size="sm" className="rounded-none" disabled>
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                        </Button>
+                      }>
+                        <LazyPdfButton
+                          packet={output}
+                          feature={feat}
+                          calculationId={item.id}
+                          createdAt={item.createdAt}
+                        />
+                      </Suspense>
 
                       <AlertDialog>
                         <AlertDialogTrigger asChild>
