@@ -1,12 +1,25 @@
 import "dotenv/config";
 import express from "express";
 import { createServer } from "http";
+import net from "net";
 import { createExpressMiddleware } from "@trpc/server/adapters/express";
 import { registerOAuthRoutes } from "./oauth";
 import { appRouter } from "../routers";
 import { createContext } from "./context";
 import { serveStatic, setupVite } from "./vite";
 import { hotmartWebhookHandler } from "../hotmart-webhook";
+
+function findAvailablePort(startPort: number): Promise<number> {
+  return new Promise((resolve, reject) => {
+    let port = startPort;
+    const tryPort = () => {
+      const srv = net.createServer();
+      srv.listen(port, () => { srv.close(() => resolve(port)); });
+      srv.on("error", () => { port++; if (port > startPort + 20) reject(new Error("No port")); else tryPort(); });
+    };
+    tryPort();
+  });
+}
 
 async function startServer() {
   const app = express();
@@ -38,10 +51,14 @@ async function startServer() {
     serveStatic(app);
   }
 
-  const port = parseInt(process.env.PORT || "3000");
+  const preferredPort = parseInt(process.env.PORT || "3000");
+  // Em produção usa porta exata; em dev busca porta disponível
+  const port = process.env.NODE_ENV === "production"
+    ? preferredPort
+    : await findAvailablePort(preferredPort);
 
   server.listen(port, "0.0.0.0", () => {
-    console.log(`Server running on http://0.0.0.0:${port}/`);
+    console.log(`Server running on http://localhost:${port}/`);
   });
 }
 
