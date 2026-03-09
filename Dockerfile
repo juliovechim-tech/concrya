@@ -54,8 +54,9 @@ RUN pnpm install --frozen-lockfile
 # Copiar source code dos packages (tsx precisa resolver .ts em runtime)
 COPY --from=builder /app/packages packages/
 
-# Copiar server source + client build artifacts
+# Copiar server source + shared + client build artifacts
 COPY --from=builder /app/apps/platform/server apps/platform/server
+COPY --from=builder /app/apps/platform/shared apps/platform/shared
 COPY --from=builder /app/apps/platform/dist apps/platform/dist
 
 ENV NODE_ENV=production
