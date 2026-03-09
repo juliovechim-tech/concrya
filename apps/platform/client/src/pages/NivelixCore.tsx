@@ -97,23 +97,23 @@ export default function NivelixCore() {
 
     calculateMutation.mutate({
       cimentoType,
-      fck: parseFloat(fck),
-      ac: parseFloat(ac),
-      consumoCimento: parseFloat(consumoCimento),
-      consumoAgua: parseFloat(consumoAgua),
-      consumoAreiaFina: parseFloat(consumoAreiaFina),
-      consumoAreiaMedia: consumoAreiaMedia ? parseFloat(consumoAreiaMedia) : undefined,
-      consumoFiller: consumoFiller ? parseFloat(consumoFiller) : undefined,
+      fck: parseFloat(fck) || 0,
+      ac: parseFloat(ac) || 0,
+      consumoCimento: parseFloat(consumoCimento) || 0,
+      consumoAgua: parseFloat(consumoAgua) || 0,
+      consumoAreiaFina: parseFloat(consumoAreiaFina) || 0,
+      consumoAreiaMedia: consumoAreiaMedia ? parseFloat(consumoAreiaMedia) || 0 : undefined,
+      consumoFiller: consumoFiller ? parseFloat(consumoFiller) || 0 : undefined,
       agenteExpansivo: agenteExpansivo as "CSA-K" | "CSA-G" | "ETTRINGITA" | "NENHUM",
-      teorAgente: parseFloat(teorAgente),
+      teorAgente: parseFloat(teorAgente) || 0,
       adicaoMineral: adicaoMineral as "SILICA_ATIVA" | "METACAULIM" | "NENHUMA",
-      teorAdicaoMineral: adicaoMineral !== "NENHUMA" ? parseFloat(teorAdicaoMineral) : undefined,
+      teorAdicaoMineral: adicaoMineral !== "NENHUMA" ? parseFloat(teorAdicaoMineral) || 0 : undefined,
       temFibra,
       tipoFibra: temFibra ? (tipoFibra as "PP" | "PVA") : undefined,
-      teorFibra: temFibra ? parseFloat(teorFibra) : undefined,
+      teorFibra: temFibra ? parseFloat(teorFibra) || 0 : undefined,
       superplastificante: parseFloat(superplastificante) || undefined,
       incorporadorAr: parseFloat(incorporadorAr) || undefined,
-      espalhamentoAlvo: parseFloat(espalhamentoAlvo),
+      espalhamentoAlvo: parseFloat(espalhamentoAlvo) || 0,
     });
   }
 
@@ -128,7 +128,7 @@ export default function NivelixCore() {
       <div className="mb-8">
         <h1 className="text-3xl font-bold uppercase tracking-tighter">NIVELIX</h1>
         <p className="text-muted-foreground mt-2">
-          Argamassa autonivelante RC — Bingham · EN 13813 · NBR 15823 · NBR 15575-3
+          Argamassa autonivelante RC — Bingham · EN 13813 · NBR 15823 · NBR 15575‑3
         </p>
       </div>
 
@@ -136,7 +136,7 @@ export default function NivelixCore() {
         {/* Formulario */}
         <Card>
           <CardHeader>
-            <CardTitle>Formulacao da Argamassa</CardTitle>
+            <CardTitle>Formulação da Argamassa</CardTitle>
             <CardDescription>Preencha os dados — argamassa autonivelante (sem brita)</CardDescription>
           </CardHeader>
           <CardContent>
@@ -188,7 +188,7 @@ export default function NivelixCore() {
                     <Input type="number" value={consumoAreiaMedia} onChange={(e) => setConsumoAreiaMedia(e.target.value)} step="10" placeholder="Opcional" />
                   </div>
                   <div className="space-y-2">
-                    <Label>Filer Calcario (kg/m3)</Label>
+                    <Label>Fíler Calcário (kg/m³)</Label>
                     <Input type="number" value={consumoFiller} onChange={(e) => setConsumoFiller(e.target.value)} step="10" placeholder="Opcional" />
                   </div>
                 </div>
@@ -196,7 +196,7 @@ export default function NivelixCore() {
 
               {/* CRC */}
               <div className="border-t border-border pt-4">
-                <h3 className="font-semibold mb-3 uppercase text-sm tracking-wider text-muted-foreground">CRC — Retracao Compensada</h3>
+                <h3 className="font-semibold mb-3 uppercase text-sm tracking-wider text-muted-foreground">CRC — Retração Compensada</h3>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label>Agente Expansivo</Label>
@@ -220,9 +220,9 @@ export default function NivelixCore() {
                 </div>
               </div>
 
-              {/* Adicao Mineral */}
+              {/* Adição Mineral */}
               <div className="border-t border-border pt-4">
-                <h3 className="font-semibold mb-3 uppercase text-sm tracking-wider text-muted-foreground">Adicao Mineral</h3>
+                <h3 className="font-semibold mb-3 uppercase text-sm tracking-wider text-muted-foreground">Adição Mineral</h3>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label>Tipo</Label>
@@ -249,7 +249,7 @@ export default function NivelixCore() {
                 <h3 className="font-semibold mb-3 uppercase text-sm tracking-wider text-muted-foreground">Fibras e Aditivos</h3>
                 <div className="flex items-center gap-3 mb-4">
                   <Checkbox id="temFibra" checked={temFibra} onCheckedChange={(v) => setTemFibra(v === true)} />
-                  <Label htmlFor="temFibra" className="cursor-pointer">Contem fibra polimerica</Label>
+                  <Label htmlFor="temFibra" className="cursor-pointer">Contém fibra polimérica</Label>
                 </div>
                 {temFibra && (
                   <div className="grid grid-cols-2 gap-4 mb-4">
@@ -281,9 +281,9 @@ export default function NivelixCore() {
                 </div>
               </div>
 
-              {/* Parametros Alvo */}
+              {/* Parâmetros Alvo */}
               <div className="border-t border-border pt-4">
-                <h3 className="font-semibold mb-3 uppercase text-sm tracking-wider text-muted-foreground">Parametros Alvo</h3>
+                <h3 className="font-semibold mb-3 uppercase text-sm tracking-wider text-muted-foreground">Parâmetros Alvo</h3>
                 <div className="space-y-2">
                   <Label>Espalhamento Alvo (mm)</Label>
                   <Input type="number" value={espalhamentoAlvo} onChange={(e) => setEspalhamentoAlvo(e.target.value)} step="10" min="50" max="400" />
@@ -346,11 +346,11 @@ export default function NivelixCore() {
                       </div>
                     )}
                     <div className="flex justify-between items-center">
-                      <span className="text-muted-foreground">Tensao de Escoamento</span>
+                      <span className="text-muted-foreground">Tensão de Escoamento</span>
                       <span className="font-mono font-bold">{result.nivelix.tensaoEscoamento} Pa</span>
                     </div>
                     <div className="flex justify-between items-center">
-                      <span className="text-muted-foreground">Viscosidade Plastica</span>
+                      <span className="text-muted-foreground">Viscosidade Plástica</span>
                       <span className="font-mono font-bold">{result.nivelix.viscosidadePlastica} Pa·s</span>
                     </div>
                   </div>
@@ -364,7 +364,7 @@ export default function NivelixCore() {
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
                         <Shield className="w-5 h-5 text-primary" />
-                        <CardTitle>CRC — Retracao Compensada</CardTitle>
+                        <CardTitle>CRC — Retração Compensada</CardTitle>
                       </div>
                       <Badge className={statusColor(result.compensa.status)}>
                         {result.compensa.status}
@@ -374,15 +374,15 @@ export default function NivelixCore() {
                   <CardContent>
                     <div className="space-y-4">
                       <div className="flex justify-between items-center">
-                        <span className="text-muted-foreground">Expansao Esperada</span>
+                        <span className="text-muted-foreground">Expansão Esperada</span>
                         <span className="font-mono font-bold">{result.compensa.expansaoEsperada} ue</span>
                       </div>
                       <div className="flex justify-between items-center">
-                        <span className="text-muted-foreground">Retracao Estimada</span>
+                        <span className="text-muted-foreground">Retração Estimada</span>
                         <span className="font-mono font-bold">{result.compensa.retracaoEstimada} ue</span>
                       </div>
                       <div className="flex justify-between items-center border-t border-border pt-3">
-                        <span className="text-muted-foreground font-semibold">Balanco CRC</span>
+                        <span className="text-muted-foreground font-semibold">Balanço CRC</span>
                         <span className={`font-mono font-bold text-lg ${result.compensa.balancoCRC > 0 ? "text-green-400" : "text-red-400"}`}>
                           {result.compensa.balancoCRC > 0 ? "+" : ""}{result.compensa.balancoCRC} ue
                         </span>
@@ -396,11 +396,11 @@ export default function NivelixCore() {
               {result.nivelix.moduloAcustico !== undefined && (
                 <Card>
                   <CardHeader>
-                    <CardTitle>Desempenho Acustico</CardTitle>
+                    <CardTitle>Desempenho Acústico</CardTitle>
                   </CardHeader>
                   <CardContent>
                     <div className="flex justify-between items-center">
-                      <span className="text-muted-foreground">Modulo Acustico</span>
+                      <span className="text-muted-foreground">Módulo Acústico</span>
                       <span className="font-mono font-bold text-lg">{result.nivelix.moduloAcustico} dB</span>
                     </div>
                   </CardContent>
@@ -414,7 +414,7 @@ export default function NivelixCore() {
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
                         <Brain className="w-5 h-5 text-primary" />
-                        <CardTitle>AION · Predicao</CardTitle>
+                        <CardTitle>AION · Predição</CardTitle>
                       </div>
                       {result.aion.drift && (
                         <Badge className="bg-orange-500/20 text-orange-400 border-orange-500/50">
@@ -433,7 +433,7 @@ export default function NivelixCore() {
                       </div>
                       <div className="space-y-1">
                         <div className="flex justify-between text-sm">
-                          <span className="text-muted-foreground">Confianca</span>
+                          <span className="text-muted-foreground">Confiança</span>
                           <span className="font-mono">{Math.round(result.aion.confianca * 100)}%</span>
                         </div>
                         <Progress value={result.aion.confianca * 100} className="h-2" />
@@ -493,7 +493,7 @@ export default function NivelixCore() {
               {/* Card MIX resumo */}
               <Card>
                 <CardHeader>
-                  <CardTitle>Formulacao</CardTitle>
+                  <CardTitle>Formulação</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-3">
@@ -505,12 +505,33 @@ export default function NivelixCore() {
                       <span className="text-muted-foreground">Agua</span>
                       <span className="font-mono">{result.mix.consumoAgua} L/m3</span>
                     </div>
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Areia Total</span>
-                      <span className="font-mono">{result.mix.consumoAreia} kg/m3</span>
-                    </div>
+                    {result.nivelixInput ? (
+                      <>
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">Areia Fina</span>
+                          <span className="font-mono">{result.nivelixInput.consumoAreiaFina} kg/m³</span>
+                        </div>
+                        {result.nivelixInput.consumoAreiaMedia != null && (
+                          <div className="flex justify-between">
+                            <span className="text-muted-foreground">Areia Média</span>
+                            <span className="font-mono">{result.nivelixInput.consumoAreiaMedia} kg/m³</span>
+                          </div>
+                        )}
+                        {result.nivelixInput.consumoFiller != null && (
+                          <div className="flex justify-between">
+                            <span className="text-muted-foreground">Fíler Calcário</span>
+                            <span className="font-mono">{result.nivelixInput.consumoFiller} kg/m³</span>
+                          </div>
+                        )}
+                      </>
+                    ) : (
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Areia Total</span>
+                        <span className="font-mono">{result.mix.consumoAreia} kg/m³</span>
+                      </div>
+                    )}
                     <div className="flex justify-between border-t border-border pt-3">
-                      <span className="text-muted-foreground">a/c</span>
+                      <span className="text-muted-foreground" title="Relação água/cimento (adimensional)">a/c</span>
                       <span className="font-mono font-bold">{result.mix.ac}</span>
                     </div>
                     <div className="flex justify-between">
@@ -525,7 +546,7 @@ export default function NivelixCore() {
             <Card>
               <CardContent className="py-16 text-center text-muted-foreground">
                 <Layers className="w-12 h-12 mx-auto mb-4 opacity-30" />
-                <p>Preencha o formulario e clique em Calcular para ver os resultados.</p>
+                <p>Preencha o formulário e clique em Calcular para ver os resultados.</p>
               </CardContent>
             </Card>
           )}

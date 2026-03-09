@@ -63,7 +63,7 @@ export default function CompensaCore() {
         <Shield className="w-16 h-16 mx-auto mb-6 text-muted-foreground" />
         <h1 className="text-3xl font-bold uppercase tracking-tighter mb-4">COMPENSA CORE</h1>
         <p className="text-muted-foreground mb-8">
-          Motor de retracao compensada (CRC). Requer plano Avancado ou superior.
+          Motor de retração compensada (CRC). Requer plano Avancado ou superior.
         </p>
         <Button asChild className="rounded-none uppercase font-bold">
           <Link href="/pricing">Ver Planos</Link>
@@ -77,15 +77,15 @@ export default function CompensaCore() {
 
     calculateMutation.mutate({
       cimentoType,
-      fck: parseFloat(fck),
-      ac: parseFloat(ac),
-      slump: parseFloat(slump),
-      consumoCimento: parseFloat(consumoCimento),
-      consumoAgua: parseFloat(consumoAgua),
-      consumoAreia: parseFloat(consumoAreia),
-      consumoBrita: parseFloat(consumoBrita),
+      fck: parseFloat(fck) || 0,
+      ac: parseFloat(ac) || 0,
+      slump: parseFloat(slump) || 0,
+      consumoCimento: parseFloat(consumoCimento) || 0,
+      consumoAgua: parseFloat(consumoAgua) || 0,
+      consumoAreia: parseFloat(consumoAreia) || 0,
+      consumoBrita: parseFloat(consumoBrita) || 0,
       agenteExpansivo: aeType as "CSA-K" | "CSA-G" | "ETTRINGITA" | "NENHUM",
-      teorAgente: parseFloat(teorAgente),
+      teorAgente: parseFloat(teorAgente) || 0,
     });
   }
 
@@ -100,7 +100,7 @@ export default function CompensaCore() {
       <div className="mb-8">
         <h1 className="text-3xl font-bold uppercase tracking-tighter">COMPENSA CORE</h1>
         <p className="text-muted-foreground mt-2">
-          Motor de retracao compensada — ACI 223R-10 · fib MC2010
+          Motor de retração compensada — ACI 223R-10 · fib MC2010
         </p>
       </div>
 
@@ -108,8 +108,8 @@ export default function CompensaCore() {
         {/* Formulario */}
         <Card>
           <CardHeader>
-            <CardTitle>Dados do Traco</CardTitle>
-            <CardDescription>Preencha os dados da formulacao</CardDescription>
+            <CardTitle>Dados do Traço</CardTitle>
+            <CardDescription>Preencha os dados da formulação</CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -234,15 +234,15 @@ export default function CompensaCore() {
                 <CardContent>
                   <div className="space-y-4">
                     <div className="flex justify-between items-center">
-                      <span className="text-muted-foreground">Expansao Esperada</span>
+                      <span className="text-muted-foreground">Expansão Esperada</span>
                       <span className="font-mono font-bold">{result.compensa.expansaoEsperada} ue</span>
                     </div>
                     <div className="flex justify-between items-center">
-                      <span className="text-muted-foreground">Retracao Estimada</span>
+                      <span className="text-muted-foreground">Retração Estimada</span>
                       <span className="font-mono font-bold">{result.compensa.retracaoEstimada} ue</span>
                     </div>
                     <div className="flex justify-between items-center border-t border-border pt-3">
-                      <span className="text-muted-foreground font-semibold">Balanco CRC</span>
+                      <span className="text-muted-foreground font-semibold">Balanço CRC</span>
                       <span className={`font-mono font-bold text-lg ${result.compensa.balancoCRC > 0 ? "text-green-400" : "text-red-400"}`}>
                         {result.compensa.balancoCRC > 0 ? "+" : ""}{result.compensa.balancoCRC} ue
                       </span>
@@ -265,7 +265,7 @@ export default function CompensaCore() {
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
                         <Brain className="w-5 h-5 text-primary" />
-                        <CardTitle>AION · Predicao de Resistencia</CardTitle>
+                        <CardTitle>AION · Predição de Resistência</CardTitle>
                       </div>
                       {result.aion.drift && (
                         <Badge className="bg-orange-500/20 text-orange-400 border-orange-500/50">
@@ -285,7 +285,7 @@ export default function CompensaCore() {
                       </div>
                       <div className="space-y-1">
                         <div className="flex justify-between text-sm">
-                          <span className="text-muted-foreground">Confianca</span>
+                          <span className="text-muted-foreground">Confiança</span>
                           <span className="font-mono">{Math.round(result.aion.confianca * 100)}%</span>
                         </div>
                         <Progress value={result.aion.confianca * 100} className="h-2" />
@@ -343,7 +343,7 @@ export default function CompensaCore() {
                       )}
                       {result.ecorisk.recomendacoes.length > 0 && (
                         <div>
-                          <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1">Recomendacoes</h4>
+                          <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1">Recomendações</h4>
                           {result.ecorisk.recomendacoes.map((r, i) => (
                             <div key={i} className="flex items-start gap-2 text-sm">
                               <Shield className="w-3 h-3 mt-1 text-blue-400 shrink-0" />
@@ -380,7 +380,7 @@ export default function CompensaCore() {
                       <span className="font-mono">{result.mix.consumoBrita} kg/m3</span>
                     </div>
                     <div className="flex justify-between border-t border-border pt-3">
-                      <span className="text-muted-foreground">a/c</span>
+                      <span className="text-muted-foreground" title="Relação água/cimento (adimensional)">a/c</span>
                       <span className="font-mono font-bold">{result.mix.ac}</span>
                     </div>
                     <div className="flex justify-between">
@@ -395,7 +395,7 @@ export default function CompensaCore() {
             <Card>
               <CardContent className="py-16 text-center text-muted-foreground">
                 <Shield className="w-12 h-12 mx-auto mb-4 opacity-30" />
-                <p>Preencha o formulario e clique em Calcular para ver os resultados.</p>
+                <p>Preencha o formulário e clique em Calcular para ver os resultados.</p>
               </CardContent>
             </Card>
           )}

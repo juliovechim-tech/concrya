@@ -98,7 +98,7 @@ export default function Historico() {
   const deleteMutation = trpc.history.delete.useMutation({
     onSuccess: (_data, variables) => {
       setAllItems((prev) => prev.filter((item) => item.id !== variables.id));
-      toast.success("Calculo excluido.");
+      toast.success("Cálculo excluído.");
     },
     onError: (error) => {
       toast.error(error.message);
@@ -122,9 +122,9 @@ export default function Historico() {
     return (
       <div className="container py-16 max-w-2xl mx-auto text-center">
         <History className="w-16 h-16 mx-auto mb-6 text-muted-foreground" />
-        <h1 className="text-3xl font-bold uppercase tracking-tighter mb-4">Historico de Calculos</h1>
+        <h1 className="text-3xl font-bold uppercase tracking-tighter mb-4">Histórico de Cálculos</h1>
         <p className="text-muted-foreground mb-8">
-          Acesse o historico completo dos seus calculos. Requer plano Avancado ou superior.
+          Acesse o histórico completo dos seus cálculos. Requer plano Avancado ou superior.
         </p>
         <Button asChild className="rounded-none uppercase font-bold">
           <Link href="/pricing">Ver Planos</Link>
@@ -136,9 +136,9 @@ export default function Historico() {
   return (
     <div className="container py-12 max-w-4xl mx-auto">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold uppercase tracking-tighter">Historico de Calculos</h1>
+        <h1 className="text-3xl font-bold uppercase tracking-tighter">Histórico de Cálculos</h1>
         <p className="text-muted-foreground mt-2">
-          Consulte, exporte e gerencie seus calculos anteriores.
+          Consulte, exporte e gerencie seus cálculos anteriores.
         </p>
       </div>
 
@@ -161,7 +161,7 @@ export default function Historico() {
         <Card>
           <CardContent className="py-16 text-center text-muted-foreground">
             <History className="w-12 h-12 mx-auto mb-4 opacity-30" />
-            <p>Nenhum calculo encontrado{filter !== "all" ? ` para ${filter.toUpperCase()}` : ""}.</p>
+            <p>Nenhum cálculo encontrado{filter !== "all" ? ` para ${filter.toUpperCase()}` : ""}.</p>
           </CardContent>
         </Card>
       ) : (
@@ -237,9 +237,9 @@ export default function Historico() {
                         </AlertDialogTrigger>
                         <AlertDialogContent>
                           <AlertDialogHeader>
-                            <AlertDialogTitle>Excluir calculo?</AlertDialogTitle>
+                            <AlertDialogTitle>Excluir cálculo?</AlertDialogTitle>
                             <AlertDialogDescription>
-                              O calculo #{item.id} sera removido do seu historico. Esta acao nao pode ser desfeita.
+                              O calculo #{item.id} será removido do seu histórico. Esta ação não pode ser desfeita.
                             </AlertDialogDescription>
                           </AlertDialogHeader>
                           <AlertDialogFooter>
