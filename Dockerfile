@@ -27,8 +27,17 @@ RUN pnpm install --frozen-lockfile
 COPY packages/ packages/
 COPY apps/platform/ apps/platform/
 
-# Build: vite (client → dist/public) + esbuild (server → dist/index.js)
+# Build: vite (client → dist/public) + esbuild (server → dist/server.js)
 RUN pnpm --filter @concrya/platform build
+RUN pnpm --filter @concrya/platform exec esbuild \
+  server/_core/index.ts \
+  --bundle \
+  --platform=node \
+  --target=node20 \
+  --outfile=dist/server.js \
+  --external:better-sqlite3 \
+  --external:mysql2 \
+  --external:drizzle-orm
 
 # ── Stage 2: Production ─────────────────────────────────────────
 FROM node:20-slim AS production
@@ -53,7 +62,8 @@ RUN pnpm install --frozen-lockfile --prod
 
 # Copiar build artifacts do stage anterior
 COPY --from=builder /app/apps/platform/dist apps/platform/dist
+COPY --from=builder /app/apps/platform/dist/server.js apps/platform/dist/server.js
 
 ENV NODE_ENV=production
 
-CMD ["node", "apps/platform/dist/index.js"]
+CMD ["node", "apps/platform/dist/server.js"]
